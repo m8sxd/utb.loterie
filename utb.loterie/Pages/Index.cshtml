@@ -1,10 +1,42 @@
 ﻿@page
 @model IndexModel
 @{
-    ViewData["Title"] = "Home page";
+    ViewData["Title"] = "Úvodní Stránka - Casino, Loterie & Sázení";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div class="jumbotron text-center bg-dark text-white p-5 rounded">
+    <h1 class="display-4">🎰 Vítejte v UTB Gaming Hub 🎲</h1>
+    <p class="lead">Vaše brána do světa kasina, loterií a sportovního sázení.</p>
+    <hr class="my-4 bg-light">
+    <p>Jsme plně auditovaná a regulovaná platforma, připravená poskytnout maximální zábavu a bezpečnost.</p>
+</div>
+
+<div class="row mt-5">
+    <div class="col-md-4 mb-4">
+        <div class="card h-100 shadow-sm">
+            <div class="card-body">
+                <h5 class="card-title">💵 Peněženka & Účet</h5>
+                <p class="card-text">Registrace, přihlášení a správa Vašeho zůstatku. Začněte vkladem!</p>
+                <a href="/Identity/Account/Login" class="btn btn-outline-primary">Přihlášení / Registrace</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4 mb-4">
+        <div class="card h-100 shadow-sm">
+            <div class="card-body">
+                <h5 class="card-title">⚽ Sázení & Kurzy</h5>
+                <p class="card-text">Procházejte události a sázejte na své oblíbené týmy s aktuálními kurzy.</p>
+                <a href="/Events" class="btn btn-outline-success">Procházet Sázky</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4 mb-4">
+        <div class="card h-100 shadow-sm">
+            <div class="card-body">
+                <h5 class="card-title">🃏 Hry & Loterie</h5>
+                <p class="card-text">Zkuste štěstí v kasinových hrách nebo si kupte los do dalšího slosování.</p>
+                <a href="/Games" class="btn btn-outline-danger">Hrát Hned</a>
+            </div>
+        </div>
+    </div>
 </div>

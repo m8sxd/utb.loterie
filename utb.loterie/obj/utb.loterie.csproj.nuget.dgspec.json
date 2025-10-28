@@ -34,9 +34,6 @@
             "projectReferences": {
               "C:\\Users\\p\\Desktop\\utb.loterie\\CasinoApp.Domain\\CasinoApp.Domain.csproj": {
                 "projectPath": "C:\\Users\\p\\Desktop\\utb.loterie\\CasinoApp.Domain\\CasinoApp.Domain.csproj"
-              },
-              "C:\\Users\\p\\Desktop\\utb.loterie\\CasinoApp.Infrastructure\\CasinoApp.Infrastructure.csproj": {
-                "projectPath": "C:\\Users\\p\\Desktop\\utb.loterie\\CasinoApp.Infrastructure\\CasinoApp.Infrastructure.csproj"
               }
             }
           }
@@ -70,6 +67,10 @@
               "suppressParent": "All",
               "target": "Package",
               "version": "[9.0.10, )"
+            },
+            "Swashbuckle.AspNetCore": {
+              "target": "Package",
+              "version": "[9.0.6, )"
             }
           },
           "imports": [
@@ -151,6 +152,10 @@
               "suppressParent": "All",
               "target": "Package",
               "version": "[9.0.10, )"
+            },
+            "Swashbuckle.AspNetCore": {
+              "target": "Package",
+              "version": "[9.0.6, )"
             }
           },
           "imports": [
@@ -201,6 +206,9 @@
           "net8.0": {
             "targetAlias": "net8.0",
             "projectReferences": {
+              "C:\\Users\\p\\Desktop\\utb.loterie\\CasinoApp.Application\\CasinoApp.Application.csproj": {
+                "projectPath": "C:\\Users\\p\\Desktop\\utb.loterie\\CasinoApp.Application\\CasinoApp.Application.csproj"
+              },
               "C:\\Users\\p\\Desktop\\utb.loterie\\CasinoApp.Domain\\CasinoApp.Domain.csproj": {
                 "projectPath": "C:\\Users\\p\\Desktop\\utb.loterie\\CasinoApp.Domain\\CasinoApp.Domain.csproj"
               }
@@ -236,6 +244,10 @@
               "suppressParent": "All",
               "target": "Package",
               "version": "[9.0.10, )"
+            },
+            "Swashbuckle.AspNetCore": {
+              "target": "Package",
+              "version": "[9.0.6, )"
             }
           },
           "imports": [
@@ -327,6 +339,10 @@
               "suppressParent": "All",
               "target": "Package",
               "version": "[9.0.10, )"
+            },
+            "Swashbuckle.AspNetCore": {
+              "target": "Package",
+              "version": "[9.0.6, )"
             }
           },
           "imports": [
