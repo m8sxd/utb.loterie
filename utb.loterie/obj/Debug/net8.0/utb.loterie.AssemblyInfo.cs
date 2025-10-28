@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("utb.loterie")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+c85dcf7f027aa0804f7590d9581b28ea0afc6104")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+98d28369eeb44335a6136a16f5b3cbda5fce05ca")]
 [assembly: System.Reflection.AssemblyProductAttribute("utb.loterie")]
 [assembly: System.Reflection.AssemblyTitleAttribute("utb.loterie")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

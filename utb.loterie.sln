@@ -1,9 +1,15 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.14.36518.9 d17.14
+VisualStudioVersion = 17.14.36518.9
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "utb.loterie", "utb.loterie\utb.loterie.csproj", "{50187ABC-FBE8-4B71-9A34-6283F9B56E9F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CasinoApp.Domain", "CasinoApp.Domain\CasinoApp.Domain.csproj", "{BD63BA44-A69B-4471-A4F1-8A8C4C5E929C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CasinoApp.Infrastructure", "CasinoApp.Infrastructure\CasinoApp.Infrastructure.csproj", "{71B3FA07-9EBB-458B-B136-770EB12B7F19}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CasinoApp.Application", "CasinoApp.Application\CasinoApp.Application.csproj", "{6FE34E7D-2B35-46F1-9FB0-30DE6EAD3C56}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +21,18 @@ Global
 		{50187ABC-FBE8-4B71-9A34-6283F9B56E9F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{50187ABC-FBE8-4B71-9A34-6283F9B56E9F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{50187ABC-FBE8-4B71-9A34-6283F9B56E9F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BD63BA44-A69B-4471-A4F1-8A8C4C5E929C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BD63BA44-A69B-4471-A4F1-8A8C4C5E929C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BD63BA44-A69B-4471-A4F1-8A8C4C5E929C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BD63BA44-A69B-4471-A4F1-8A8C4C5E929C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{71B3FA07-9EBB-458B-B136-770EB12B7F19}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{71B3FA07-9EBB-458B-B136-770EB12B7F19}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{71B3FA07-9EBB-458B-B136-770EB12B7F19}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{71B3FA07-9EBB-458B-B136-770EB12B7F19}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6FE34E7D-2B35-46F1-9FB0-30DE6EAD3C56}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6FE34E7D-2B35-46F1-9FB0-30DE6EAD3C56}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6FE34E7D-2B35-46F1-9FB0-30DE6EAD3C56}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6FE34E7D-2B35-46F1-9FB0-30DE6EAD3C56}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
