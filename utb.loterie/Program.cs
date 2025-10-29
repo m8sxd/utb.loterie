@@ -21,8 +21,12 @@ builder.Services.AddSwaggerGen(options =>
 });
 
 // Databáze (používá SQLite)
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+var serverVersion = ServerVersion.AutoDetect(connectionString);
+
 builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
+   options.UseMySql(connectionString, serverVersion)
+);
 
 // Registrace Aplikaèních a Infrastrukturních Služeb
 // Registrace Repozitáøù
