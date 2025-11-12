@@ -24,4 +24,9 @@
     <ProjectReference Include="..\CasinoApp.Infrastructure\CasinoApp.Infrastructure.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Models\" />
+    <Folder Include="Views\Shared\" />
+  </ItemGroup>
+
 </Project>

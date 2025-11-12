@@ -9,7 +9,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 // --- Konfigurace Služeb (Service Container) ---
 
-builder.Services.AddRazorPages();
+builder.Services.AddControllersWithViews();
 builder.Services.AddControllers();
 
 builder.Services.AddEndpointsApiExplorer();
@@ -63,7 +63,9 @@ app.UseRouting();
 // app.UseAuthentication(); 
 app.UseAuthorization();
 
-app.MapRazorPages();
+app.MapControllerRoute(
+    name: "default",
+    pattern: "{controller=Home}/{action=Index}/{id?}");
 app.MapControllers();
 
 app.Run();
