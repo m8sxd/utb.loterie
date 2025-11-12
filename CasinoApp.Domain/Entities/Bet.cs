@@ -9,8 +9,8 @@ namespace CasinoApp.Domain.Entities
     {
         public Guid Id { get; set; }
 
-        public Guid UserId { get; set; }
-        // public User User { get; set; } 
+        public int UserId { get; set; } 
+        public User User { get; set; }
 
         public Guid WalletId { get; set; }
 
@@ -26,7 +26,6 @@ namespace CasinoApp.Domain.Entities
         public DateTime PlacedAt { get; set; } = DateTime.UtcNow;
         public DateTime? SettledAt { get; set; }
 
-        // Navigační property
         public Wallet Wallet { get; set; }
         public ICollection<BetSelection> Selections { get; set; } = new List<BetSelection>();
     }

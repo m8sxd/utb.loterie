@@ -1,47 +1,42 @@
 using CasinoApp.Application.Interfaces;
 using CasinoApp.Application.Services;
-using CasinoApp.Infrastructure.Database; // Odkaz na AppDbContext
-using CasinoApp.Infrastructure.Repositories; // Odkaz na implementace
+using CasinoApp.Infrastructure.Database;
+using CasinoApp.Infrastructure.Repositories;
 using Microsoft.EntityFrameworkCore;
-using System.Reflection; // Pro Swagger XML
+using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// --- Konfigurace Služeb (Service Container) ---
-
-builder.Services.AddControllersWithViews();
-builder.Services.AddControllers();
-
+builder.Services.AddControllersWithViews(); 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
 {
-    // Povolení XML dokumentace pro Swagger
     var xmlFilename = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
-    options.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, xmlFilename));
+    var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFilename);
+    if (File.Exists(xmlPath))
+    {
+        options.IncludeXmlComments(xmlPath);
+    }
 });
 
-// Databáze (používá SQLite)
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
-var serverVersion = ServerVersion.AutoDetect(connectionString);
+
+var serverVersion = new MariaDbServerVersion(new Version(10, 4, 28)); 
 
 builder.Services.AddDbContext<AppDbContext>(options =>
-   options.UseMySql(connectionString, serverVersion)
+    options.UseMySql(connectionString, serverVersion, b =>
+    {
+        b.EnableRetryOnFailure();
+    })
 );
 
-// Registrace Aplikaèních a Infrastrukturních Služeb
-// Registrace Repozitáøù
 builder.Services.AddScoped<IWalletRepository, WalletRepository>();
-
-// Registrace NÁSTROJÙ pro architektonickou èistotu
+builder.Services.AddScoped<IBetRepository, BetRepository>();
 builder.Services.AddScoped<ITransactionManager, TransactionManager>();
-
-// Registrace Aplikaèních služeb (Business Logika)
-builder.Services.AddScoped<WalletService>();
 builder.Services.AddScoped<IBettingService, BettingService>();
+builder.Services.AddScoped<WalletService>();
 
 var app = builder.Build();
-
-// --- Konfigurace HTTP Request Pipeline ---
 
 if (app.Environment.IsDevelopment())
 {
@@ -51,21 +46,20 @@ if (app.Environment.IsDevelopment())
 }
 else
 {
-    app.UseExceptionHandler("/Error");
+    app.UseExceptionHandler("/Home/Error"); 
     app.UseHsts();
 }
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
-
 app.UseRouting();
 
-// app.UseAuthentication(); 
 app.UseAuthorization();
 
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
+
 app.MapControllers();
 
 app.Run();
