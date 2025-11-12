@@ -31,7 +31,8 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 );
 
 builder.Services.AddScoped<IWalletRepository, WalletRepository>();
-builder.Services.AddScoped<IBetRepository, BetRepository>();
+builder.Services.AddScoped<IUserRepository, UserRepository>(); 
+builder.Services.AddScoped<IBetRepository, BetRepository>();   
 builder.Services.AddScoped<ITransactionManager, TransactionManager>();
 builder.Services.AddScoped<IBettingService, BettingService>();
 builder.Services.AddScoped<WalletService>();

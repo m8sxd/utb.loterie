@@ -7,7 +7,7 @@ namespace CasinoApp.Application.DTOs
     public class PlaceBetRequest
     {
         [Required]
-        public int UserId { get; set; } 
+        public int UserId { get; set; }
 
         [Required]
         [Range(0.01, 1000000.0)]
@@ -17,7 +17,6 @@ namespace CasinoApp.Application.DTOs
         [MinLength(1)]
         public List<BetSelectionDTO> Selections { get; set; } = new List<BetSelectionDTO>();
     }
-
     public class BetSelectionDTO
     {
         [Required]

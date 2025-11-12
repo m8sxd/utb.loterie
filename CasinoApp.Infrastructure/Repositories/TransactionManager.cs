@@ -1,7 +1,6 @@
 ﻿using CasinoApp.Application.Interfaces;
 using CasinoApp.Infrastructure.Database;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Storage; // PŘIDÁNO PRO IDbContextTransaction
 using System;
 using System.Threading.Tasks;
 
@@ -22,8 +21,6 @@ namespace CasinoApp.Infrastructure.Repositories
 
             await strategy.ExecuteAsync(async () =>
             {
-                // Zde se používá IDbContextTransaction (implicitně v BeginTransactionAsync)
-                // Ale pro kompilátor je potřeba výše uvedený using.
                 using (var transaction = await _context.Database.BeginTransactionAsync())
                 {
                     try
@@ -34,15 +31,10 @@ namespace CasinoApp.Infrastructure.Repositories
 
                         await transaction.CommitAsync();
                     }
-                    catch (DbUpdateConcurrencyException)
-                    {
-                        await transaction.RollbackAsync();
-                        throw;
-                    }
                     catch (Exception)
                     {
                         await transaction.RollbackAsync();
-                        throw;
+                        throw; 
                     }
                 }
             });

@@ -1,7 +1,10 @@
-﻿using CasinoApp.Application.DTOs; 
+﻿using CasinoApp.Application.DTOs; // Používáme DTO
 using CasinoApp.Application.Interfaces;
 using CasinoApp.Domain.Entities;
 using Microsoft.AspNetCore.Mvc;
+using System;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace utb.loterie.Controllers
 {

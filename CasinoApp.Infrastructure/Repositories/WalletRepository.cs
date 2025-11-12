@@ -1,7 +1,9 @@
 ﻿using CasinoApp.Application.Interfaces;
 using CasinoApp.Domain.Entities;
-using CasinoApp.Infrastructure.Database; // ZMĚNA
+using CasinoApp.Infrastructure.Database;
 using Microsoft.EntityFrameworkCore;
+using System;
+using System.Threading.Tasks;
 
 namespace CasinoApp.Infrastructure.Repositories
 {
@@ -14,27 +16,22 @@ namespace CasinoApp.Infrastructure.Repositories
             _context = context;
         }
 
-        public async Task<Wallet?> GetByUserIdAsync(Guid userId)
-        {
-            return await _context.Wallets
-                .FirstOrDefaultAsync(w => w.UserId == userId);
-        }
-
         public async Task<Wallet?> GetByIdAsync(Guid walletId)
         {
+            return await _context.Wallets.FindAsync(walletId);
+        }
+
+        public async Task<Wallet?> GetByUserIdAsync(int userId) 
+        {
             return await _context.Wallets
-                .FirstOrDefaultAsync(w => w.Id == walletId);
+                .Include(w => w.Transactions)
+                .FirstOrDefaultAsync(w => w.UserId == userId);
         }
 
         public Task UpdateAsync(Wallet wallet)
         {
-            _context.Wallets.Update(wallet);
+            _context.Entry(wallet).State = EntityState.Modified;
             return Task.CompletedTask;
-        }
-
-        public async Task SaveChangesAsync()
-        {
-            await _context.SaveChangesAsync();
         }
     }
 }

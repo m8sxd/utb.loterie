@@ -18,29 +18,40 @@ namespace CasinoApp.Infrastructure.Database
         {
             base.OnModelCreating(modelBuilder);
 
-            modelBuilder.Entity<Wallet>()
-                .Property(w => w.ConcurrencyToken)
-                .IsRowVersion();
+            modelBuilder.Entity<User>(e =>
+            {
+                e.HasKey(u => u.Id);
+                e.HasOne(u => u.Wallet)
+                    .WithOne(w => w.User)
+                    .HasForeignKey<Wallet>(w => w.UserId);
 
-            modelBuilder.Entity<Wallet>()
-                .HasIndex(w => w.UserId)
-                .IsUnique();
+                e.HasMany(u => u.Bets)
+                    .WithOne(b => b.User)
+                    .HasForeignKey(b => b.UserId);
+            });
 
-            modelBuilder.Entity<Transaction>()
-                .HasIndex(t => t.WalletId);
+            modelBuilder.Entity<Wallet>(e =>
+            {
+                e.HasKey(w => w.Id);
+                e.Property(w => w.ConcurrencyToken).IsRowVersion(); 
+                e.HasIndex(w => w.UserId).IsUnique(); 
 
-            modelBuilder.Entity<Transaction>()
-                .HasIndex(t => t.CreatedAt);
+                e.HasMany(w => w.Transactions)
+                    .WithOne(t => t.Wallet)
+                    .HasForeignKey(t => t.WalletId); 
+            });
 
-            modelBuilder.Entity<Bet>()
-                .HasMany(b => b.Selections)
-                .WithOne(s => s.Bet)
-                .HasForeignKey(s => s.BetId);
+            modelBuilder.Entity<Bet>(e =>
+            {
+                e.HasKey(b => b.Id);
+                e.HasMany(b => b.Selections)
+                    .WithOne(s => s.Bet)
+                    .HasForeignKey(s => s.BetId); 
 
-            modelBuilder.Entity<Bet>()
-                .HasOne(b => b.Wallet)
-                .WithMany()
-                .HasForeignKey(b => b.WalletId);
+                e.HasOne(b => b.Wallet)
+                    .WithMany() 
+                    .HasForeignKey(b => b.WalletId);
+            });
         }
     }
 }

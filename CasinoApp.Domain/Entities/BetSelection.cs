@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace CasinoApp.Domain.Entities
@@ -22,7 +23,5 @@ namespace CasinoApp.Domain.Entities
 
         [MaxLength(20)]
         public string SettlementStatus { get; set; } = "Pending";
-
-        public string? WinningOutcomeKey { get; set; }
     }
 }

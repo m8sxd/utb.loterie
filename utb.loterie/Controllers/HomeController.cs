@@ -1,20 +1,20 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using utb.loterie.Models;
+using System.Diagnostics;
 
 namespace utb.loterie.Controllers
 {
-    // Toto je MVC kontroler, který vrací Views
     public class HomeController : Controller
     {
         public IActionResult Index()
         {
-            // Toto vrátí soubor /Views/Home/Index.cshtml
             return View();
         }
 
-        // Pro budoucí chybovou stránku
+        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {
-            return View();
+            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace CasinoApp.Domain.Entities
 {
@@ -6,14 +7,16 @@ namespace CasinoApp.Domain.Entities
     {
         public Guid Id { get; set; }
 
-        public int UserId { get; set; } 
+        public int UserId { get; set; }
         public User User { get; set; }
 
         [MaxLength(3)]
         public string Currency { get; set; } = "EUR";
 
+        [Column(TypeName = "decimal(18, 2)")]
         public decimal Balance { get; set; } = 0.00m;
 
+        [Column(TypeName = "decimal(18, 2)")]
         public decimal Reserved { get; set; } = 0.00m;
 
         [Timestamp]
@@ -31,5 +34,7 @@ namespace CasinoApp.Domain.Entities
                 Balance += amount;
             }
         }
+
+        public ICollection<Transaction> Transactions { get; set; } = new List<Transaction>();
     }
 }

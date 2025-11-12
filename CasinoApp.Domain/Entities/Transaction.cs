@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace CasinoApp.Domain.Entities
@@ -13,8 +14,10 @@ namespace CasinoApp.Domain.Entities
         [MaxLength(32)]
         public string Type { get; set; } = string.Empty;
 
+        [Column(TypeName = "decimal(18, 2)")]
         public decimal Amount { get; set; }
 
+        [Column(TypeName = "decimal(18, 2)")]
         public decimal BalanceAfter { get; set; }
 
         public Guid? ReferenceId { get; set; }

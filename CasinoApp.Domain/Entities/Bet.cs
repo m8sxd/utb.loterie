@@ -9,10 +9,11 @@ namespace CasinoApp.Domain.Entities
     {
         public Guid Id { get; set; }
 
-        public int UserId { get; set; } 
+        public int UserId { get; set; }
         public User User { get; set; }
 
         public Guid WalletId { get; set; }
+        public Wallet Wallet { get; set; }
 
         [Column(TypeName = "decimal(18, 2)")]
         public decimal Stake { get; set; }
@@ -25,8 +26,6 @@ namespace CasinoApp.Domain.Entities
 
         public DateTime PlacedAt { get; set; } = DateTime.UtcNow;
         public DateTime? SettledAt { get; set; }
-
-        public Wallet Wallet { get; set; }
         public ICollection<BetSelection> Selections { get; set; } = new List<BetSelection>();
     }
 }
