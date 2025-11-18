@@ -1,8 +1,179 @@
 ﻿@{
-    ViewData["Title"] = "Domovská stránka";
+    ViewData["Title"] = "UTB Casino";
+    Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Test.cz</h1>
-    <p>funguje mvc?</p>
+<style>
+    body {
+        background-color: #121212;
+        color: #e0e0e0;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    .text-gold {
+        color: #d4af37;
+        text-shadow: 0 0 10px rgba(212, 175, 55, 0.3);
+    }
+
+    .hero-section {
+        background: radial-gradient(circle at center, #2c0000 0%, #000000 100%);
+        border-bottom: 2px solid #d4af37;
+        padding: 80px 0;
+    }
+
+    .game-card {
+        background-color: #1e1e1e;
+        border: 1px solid #333;
+        transition: all 0.3s ease;
+        overflow: hidden;
+        display: flex;
+        flex-direction: row;
+        height: 100%;
+    }
+    
+    .game-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 0 15px rgba(212, 175, 55, 0.3);
+        border-color: #d4af37;
+        cursor: pointer;
+    }
+
+    .game-img {
+        width: 90px;
+        min-width: 90px;
+        height: auto;
+        object-fit: cover; 
+        border-right: 1px solid #333;
+        filter: brightness(0.8);
+        transition: filter 0.3s;
+    }
+
+    .game-card:hover .game-img {
+        filter: brightness(1);
+    }
+
+    .game-content {
+        padding: 0.8rem;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        width: 100%;
+    }
+
+    .game-content h5 {
+        font-size: 1rem;
+        margin-bottom: 0.3rem;
+    }
+
+    .game-content p {
+        font-size: 0.8rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .btn-gold {
+        background-color: #d4af37;
+        color: #000;
+        font-weight: bold;
+        border: none;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+    
+    .btn-gold:hover {
+        background-color: #fff;
+        color: #000;
+        box-shadow: 0 0 15px #fff;
+    }
+</style>
+
+<div class="hero-section text-center mb-5">
+    <div class="container">
+        <h1 class="display-3 fw-bold text-white mb-3">UTB <span class="text-gold">CASINO</span></h1>
+        <p class="lead text-light opacity-75 mb-4">Místo, kde se rodí vítězové. Vstupní bonus až 50 000 Kč.</p>
+        
+        <div class="d-flex justify-content-center gap-3">
+            <button class="btn btn-gold btn-lg px-5 py-3 rounded-pill">Vložit a hrát</button>
+            <button class="btn btn-outline-light btn-lg px-5 py-3 rounded-pill">Vyzkoušet zdarma</button>
+        </div>
+    </div>
+</div>
+
+<div class="container mb-5">
+    <div class="bg-dark border border-secondary rounded p-2 d-flex align-items-center justify-content-between px-4">
+        <span class="text-gold fw-bold">🏆 POSLEDNÍ VÝHRY:</span>
+        <marquee behavior="scroll" direction="left" class="text-white w-75">
+            Jan N. vyhrál 12 500 Kč na Starburst • Petr K. vyhrál 4 200 Kč na Ruletě • Eva M. vyhrála 89 000 Kč na Jackpotu!
+        </marquee>
+    </div>
+</div>
+
+<div class="container">
+    <h2 class="text-white mb-4 border-start border-4 border-warning ps-3">Nejhranější hry</h2>
+    
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+        <div class="col">
+            <div class="game-card">
+                <img src="https://placehold.co/90x140/222/d4af37?text=Slots" class="game-img" alt="Neon Slots">
+                <div class="game-content">
+                    <h5 class="text-white">Neon Slots</h5>
+                    <button class="btn btn-sm btn-outline-warning w-100 mt-auto">Hrát</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="col">
+            <div class="game-card">
+                <img src="https://placehold.co/90x140/222/d4af37?text=Ruleta" class="game-img" alt="Royal Roulette">
+                <div class="game-content">
+                    <h5 class="text-white">Royal Roulette</h5>
+                    <button class="btn btn-sm btn-outline-warning w-100 mt-auto">Hrát</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="col">
+            <div class="game-card">
+                <img src="https://placehold.co/90x140/222/d4af37?text=Blackjack" class="game-img" alt="Blackjack Pro">
+                <div class="game-content">
+                    <h5 class="text-white">Blackjack Pro</h5>
+                    <button class="btn btn-sm btn-outline-warning w-100 mt-auto">Hrát</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="col">
+            <div class="game-card">
+                <img src="https://placehold.co/90x140/222/d4af37?text=Poker" class="game-img" alt="Joker Poker">
+                <div class="game-content">
+                    <h5 class="text-white">Joker Poker</h5>
+                    <button class="btn btn-sm btn-outline-warning w-100 mt-auto">Hrát</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="col">
+            <div class="game-card">
+                <img src="https://placehold.co/90x140/222/d4af37?text=Baccarat" class="game-img" alt="Baccarat">
+                <div class="game-content">
+                    <h5 class="text-white">Baccarat</h5>
+                    <button class="btn btn-sm btn-outline-warning w-100 mt-auto">Hrát</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="col">
+            <div class="game-card">
+                <img src="https://placehold.co/90x140/222/d4af37?text=Dice" class="game-img" alt="Lucky Dice">
+                <div class="game-content">
+                    <h5 class="text-white">Lucky Dice</h5>
+                    <button class="btn btn-sm btn-outline-warning w-100 mt-auto">Hrát</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container mt-5 pt-5 pb-5 text-muted text-center">
+    <hr class="border-secondary mb-4">
+    <p class="text-gold">Licencováno MFČR. Hrajte zodpovědně. Zákaz účasti osobám mladším 18 let.</p>
 </div>
