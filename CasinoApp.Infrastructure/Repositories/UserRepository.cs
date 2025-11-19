@@ -21,5 +21,18 @@ namespace CasinoApp.Infrastructure.Repositories
                 .Include(u => u.Bets)
                 .FirstOrDefaultAsync(u => u.Id == userId);
         }
+
+        public async Task<User?> GetByUsernameAsync(string username)
+        {
+            return await _context.Users
+                .Include(u => u.Wallet) 
+                .FirstOrDefaultAsync(u => u.Username == username);
+        }
+
+        public async Task AddAsync(User user)
+        {
+            _context.Users.Add(user);
+            await _context.SaveChangesAsync();
+        }
     }
 }

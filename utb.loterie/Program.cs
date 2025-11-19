@@ -7,7 +7,17 @@ using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddControllersWithViews(); 
+builder.Services.AddControllersWithViews();
+
+builder.Services.AddAuthentication("CookieAuth")
+    .AddCookie("CookieAuth", options =>
+    {
+        options.Cookie.Name = "UTBCasino.Auth";
+        options.LoginPath = "/Account/Login";
+        options.AccessDeniedPath = "/Account/AccessDenied";
+        options.ExpireTimeSpan = TimeSpan.FromDays(7);
+    });
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
 {
@@ -55,6 +65,7 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseRouting();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllerRoute(
@@ -62,5 +73,20 @@ app.MapControllerRoute(
     pattern: "{controller=Home}/{action=Index}/{id?}");
 
 app.MapControllers();
+
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+    try
+    {
+        var context = services.GetRequiredService<AppDbContext>();
+        context.Database.Migrate();
+    }
+    catch (Exception ex)
+    {
+        var logger = services.GetRequiredService<ILogger<Program>>();
+        logger.LogError(ex, "Došlo k chybì pøi migraci databáze.");
+    }
+}
 
 app.Run();

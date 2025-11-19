@@ -1,0 +1,54 @@
+﻿@model utb.loterie.Models.RegisterViewModel
+@{
+    ViewData["Title"] = "Registrace";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container mt-5 text-center" style="max-width: 500px;">
+    <h2 class="text-gold mb-4">NOVÁ REGISTRACE</h2>
+    <p class="text-muted mb-4">Vytvořte si účet a získejte vstupní bonus <span class="text-white fw-bold">50 000 Kč</span>!</p>
+
+    <div class="card bg-dark border-secondary text-white shadow-lg">
+        <div class="card-body p-4">
+            <form asp-action="Register" method="post">
+                <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                <div class="mb-3 text-start">
+                    <label asp-for="Username" class="form-label">Uživatelské jméno</label>
+                    <input asp-for="Username" class="form-control bg-secondary text-white border-0" placeholder="Zvolte si přezdívku" />
+                    <span asp-validation-for="Username" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3 text-start">
+                    <label asp-for="Email" class="form-label">E-mail</label>
+                    <input asp-for="Email" class="form-control bg-secondary text-white border-0" placeholder="vas@email.cz" />
+                    <span asp-validation-for="Email" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3 text-start">
+                    <label asp-for="Password" class="form-label">Heslo</label>
+                    <input asp-for="Password" class="form-control bg-secondary text-white border-0" placeholder="******" />
+                    <span asp-validation-for="Password" class="text-danger"></span>
+                </div>
+
+                <div class="mb-4 text-start">
+                    <label asp-for="ConfirmPassword" class="form-label">Potvrzení hesla</label>
+                    <input asp-for="ConfirmPassword" class="form-control bg-secondary text-white border-0" placeholder="******" />
+                    <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+                </div>
+
+                <button type="submit" class="btn btn-gold w-100 py-3 fw-bold text-uppercase">Vytvořit účet</button>
+            </form>
+        </div>
+    </div>
+
+    <p class="mt-4 text-muted">
+        Už máte účet? <a asp-action="Login" class="text-gold text-decoration-none fw-bold">Přihlaste se zde</a>
+    </p>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
