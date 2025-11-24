@@ -1,30 +1,28 @@
 # Návrh webové aplikace: Kasino, loterie a sázení
 
-Autoři: Matěj Krňávek, Jakub Severin
+**Autoři:** Matěj Krňávek, Jakub Severin
 
 ## Cíl projektu
 
 Vytvořit vícevrstvou webovou aplikaci umožňující uživatelům:
 
-* Registrovat se a spravovat svůj účet. ❌
-* Sázet na sportovní události. ❌
-* Hrát základní kasinové hry. ❌
-* Kupovat losy do loterie. ❌
-* Spravovat peněžní zůstatek (wallet). ✅
-
-
+* [x] Registrovat se a spravovat svůj účet. ✅
+* [ ] Sázet na sportovní události. 🔄 *(API pro vložení sázky je hotové, chybí data událostí)*
+* [ ] Hrát základní kasinové hry. ❌
+* [ ] Kupovat losy do loterie. ❌
+* [x] Spravovat peněžní zůstatek (wallet). ✅
 
 ---
 
 ## Funkční požadavky
 
-* Registrace a přihlášení uživatele ❌
-* Peněženka a transakce (vklady, výběry, sázky, výhry) ✅
-* Správa sázek a zobrazování výsledků ❌
-* Správa loterie (tikety, losování) ❌
-* Záznam kasinových her a výsledků ❌
-* Role uživatelů: `User`, `Admin` ❌
-* Admin správa kurzů, událostí a losování ❌
+* **Registrace a přihlášení uživatele** ✅ *(Implementováno přes AccountController a Cookies)*
+* **Peněženka a transakce** (vklady, výběry, sázky, výhry) ✅ *(Atomické transakce fungují)*
+* **Správa sázek a zobrazování výsledků** 🔄 *(Logika pro uložení sázky existuje, vyhodnocení zatím chybí)*
+* **Správa loterie** (tikety, losování) ❌
+* **Záznam kasinových her a výsledků** ❌
+* **Role uživatelů:** `User`, `Admin` ❌ *(Zatím jen User bez rolí)*
+* **Admin správa** kurzů, událostí a losování ❌
 
 ---
 
@@ -42,7 +40,7 @@ Vytvořit vícevrstvou webovou aplikaci umožňující uživatelům:
 * `Odds` ❌
 * `LotteryDraws` ❌
 * `LotteryTickets` ❌
-* `Game` ✅
+* `Game` ✅ *(Entita existuje v Domain)*
 * `GameSessions` ❌
 
 ### Stručný přehled tabulek
@@ -51,16 +49,16 @@ Vytvořit vícevrstvou webovou aplikaci umožňující uživatelům:
 
 | Sloupec | Popis |
 | :--- | :--- |
-| Id | Primární klíč |
+| Id | Primární klíč (int) |
 | Username, Email, PasswordHash | Údaje pro autentizaci |
-| Role | `User` nebo `Admin` |
+| Role | `User` nebo `Admin` (Zatím nevyužito) |
 
 **Wallets** ✅
 
 | Sloupec | Popis |
 | :--- | :--- |
 | Balance | Aktuální zůstatek |
-| Currency | Měna účtu |
+| Currency | Měna účtu (Default: EUR/CZK) |
 
 **Transactions** ✅
 
@@ -69,10 +67,10 @@ Vytvořit vícevrstvou webovou aplikaci umožňující uživatelům:
 | Type | Deposit, Withdrawal, BetStake, BetWin |
 | Amount | Částka transakce |
 
-**Bets / Events** ❌
+**Bets / Events** 🔄
 
-* Uživatel vytváří sázky na události.
-* Výpočet výsledků probíhá na základě kurzů a výsledku události.
+* Uživatel vytváří sázky na události. ✅ *(Přes API `BetsController`)*
+* Výpočet výsledků probíhá na základě kurzů a výsledku události. ❌ *(Logika připravena, ale chybí data událostí)*
 
 **Lottery a Casino** ❌
 
