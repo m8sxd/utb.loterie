@@ -1,0 +1,224 @@
+@{
+    ViewData["Title"] = "Royal Roulette";
+
+    int[] redNumbers = { 1, 3, 5, 7, 9, 12, 14, 16, 18, 19, 21, 23, 25, 27, 30, 32, 34, 36 };
+}
+
+<style>
+    body {
+        background-color: #121212;
+        color: #e0e0e0;
+        font-family: 'Segoe UI', sans-serif;
+    }
+
+    .wheel-wrapper {
+        position: relative;
+        width: 350px;
+        height: 350px;
+        margin: 0 auto;
+        overflow: visible;
+    }
+
+    #wheel-img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        filter: drop-shadow(0 0 20px rgba(0,0,0,0.5));
+        transition: transform 4s cubic-bezier(0.15, 0.8, 0.15, 1);
+    }
+
+    .pointer {
+        position: absolute;
+        top: -20px;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 20;
+        width: 0; height: 0;
+        border-left: 15px solid transparent;
+        border-right: 15px solid transparent;
+        border-top: 40px solid #ffd700;
+        filter: drop-shadow(0 4px 2px rgba(0,0,0,0.8));
+    }
+
+    .table-container {
+        background-color: #0f3b25;
+        border: 8px solid #5c3a13;
+        border-radius: 15px;
+        padding: 20px;
+        box-shadow: inset 0 0 60px #000;
+    }
+
+    .bet-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 4px;
+        max-width: 450px;
+        margin: 0 auto;
+    }
+
+    .bet-cell {
+        padding: 12px;
+        text-align: center;
+        font-weight: bold;
+        border: 1px solid rgba(255,255,255,0.1);
+        cursor: pointer;
+        background: rgba(0,0,0,0.2);
+        transition: all 0.2s;
+    }
+
+    .bet-cell:hover {
+        background: #ffd700;
+        color: black;
+        border-color: #ffd700;
+    }
+
+    .bg-red { background-color: #b00000; }
+    .bg-green { background-color: #006400; }
+
+    .cell-zero {
+        grid-column: span 3;
+        border-radius: 5px 5px 0 0;
+        font-size: 1.2rem;
+    }
+
+    /* Styl pro tlačítka na barvu */
+    .color-bet-btn {
+        padding: 15px;
+        font-weight: bold;
+        text-transform: uppercase;
+        border: 2px solid rgba(255,255,255,0.2);
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+
+    .btn-bet-red { background-color: #b00000; color: white; }
+    .btn-bet-red:hover { background-color: #d60000; border-color: white; }
+
+    .btn-bet-black { background-color: #222; color: white; }
+    .btn-bet-black:hover { background-color: #333; border-color: white; }
+
+    .winner-highlight {
+        background-color: #ffd700 !important;
+        color: black !important;
+        border: 2px solid white !important;
+        transform: scale(1.1);
+        z-index: 5;
+        box-shadow: 0 0 15px #ffd700;
+    }
+
+    .btn-gold {
+        background-color: #d4af37;
+        color: #000;
+        font-weight: bold;
+        border: none;
+        text-transform: uppercase;
+    }
+    .btn-gold:hover { background-color: #fff; color: #000; box-shadow: 0 0 15px #fff; }
+</style>
+
+<div class="container mt-5 mb-5">
+
+    <div class="text-center mb-5">
+        <h1 class="display-4 fw-bold text-white">ROYAL <span style="color: #d4af37;">ROULETTE</span></h1>
+        <p class="text-muted">Vsaďte si a vyhrajte</p>
+    </div>
+
+    <div class="row align-items-center">
+        <div class="col-lg-6 text-center mb-5">
+
+            <div class="wheel-wrapper mb-4">
+                <div class="pointer"></div>
+                <img id="wheel-img" src="~/images/ruleta-vector.png" alt="Ruleta">
+            </div>
+
+            <div class="bg-dark border border-secondary p-3 rounded d-inline-block shadow" style="min-width: 250px;">
+                <div class="mb-2 text-muted small">VÍTĚZNÉ ČÍSLO</div>
+                <div id="resultDisplay" class="display-3 fw-bold text-white mb-3">-</div>
+                <button onclick="spinWheel()" id="spinBtn" class="btn btn-gold w-100 py-2 rounded-pill">
+                    ROZTOČIT KOLO
+                </button>
+            </div>
+        </div>
+
+        <div class="col-lg-6">
+            <div class="table-container">
+                <div class="bet-grid mb-4">
+                    <div id="cell-0" class="bet-cell bg-green cell-zero">0</div>
+
+                    @for (int i = 1; i <= 36; i++)
+                    {
+                        string color = redNumbers.Contains(i) ? "bg-red" : "";
+                        <div id="cell-@i" class="bet-cell @color">@i</div>
+                    }
+                </div>
+
+                <div class="row gx-2 mb-3">
+                    <div class="col-6">
+                        <div id="bet-red" class="bet-cell color-bet-btn btn-bet-red">ČERVENÁ</div>
+                    </div>
+                    <div class="col-6">
+                        <div id="bet-black" class="bet-cell color-bet-btn btn-bet-black">ČERNÁ</div>
+                    </div>
+                </div>
+
+                <div class="text-center mt-3">
+                    <small class="text-muted">Kliknutím na číslo nebo barvu vsadíte (demo)</small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const wheelNumbers = [0, 32, 15, 19, 4, 21, 2, 25, 17, 34, 6, 27, 13, 36, 11, 30, 8, 23, 10, 5, 24, 16, 33, 1, 20, 14, 31, 9, 22, 18, 29, 7, 28, 12, 35, 3, 26];
+    // Pole červených čísel pro JS logiku
+    const redNumbersJS = [1, 3, 5, 7, 9, 12, 14, 16, 18, 19, 21, 23, 25, 27, 30, 32, 34, 36];
+
+    let currentRotation = 0;
+
+    function spinWheel() {
+        const wheel = document.getElementById("wheel-img");
+        const btn = document.getElementById("spinBtn");
+        const display = document.getElementById("resultDisplay");
+
+        btn.disabled = true;
+        display.innerText = "...";
+
+        // Vyčistit všechna zvýraznění (čísla i barvy)
+        document.querySelectorAll('.winner-highlight').forEach(c => c.classList.remove('winner-highlight'));
+
+        const winningNumber = Math.floor(Math.random() * 37);
+        const index = wheelNumbers.indexOf(winningNumber);
+
+        const sliceAngle = 360 / 37;
+        const rotationNeeded = (360 - (index * sliceAngle));
+        const randomOffset = (Math.random() * 4) - 2;
+        const totalSpins = 360 * 5;
+
+        const newRotation = currentRotation + totalSpins + rotationNeeded - (currentRotation % 360) + randomOffset;
+        currentRotation = newRotation;
+
+        wheel.style.transform = `rotate(${currentRotation}deg)`;
+
+        setTimeout(() => {
+            display.innerText = winningNumber;
+
+            // Zvýraznit číslo
+            const cell = document.getElementById(`cell-${winningNumber}`);
+            if(cell) {
+                cell.classList.add('winner-highlight');
+            }
+
+            // Zvýraznit barvu (pokud není 0)
+            if (winningNumber !== 0) {
+                if (redNumbersJS.includes(winningNumber)) {
+                    document.getElementById('bet-red').classList.add('winner-highlight');
+                } else {
+                    document.getElementById('bet-black').classList.add('winner-highlight');
+                }
+            }
+
+            btn.disabled = false;
+        }, 4000);
+    }
+</script>
