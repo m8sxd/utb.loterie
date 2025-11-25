@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Cryptography;
 
 namespace utb.loterie.Controllers 
 {
@@ -12,6 +13,17 @@ namespace utb.loterie.Controllers
         public IActionResult Roulette()
         {
             return View();
+        }
+        
+        [HttpPost]
+        public IActionResult SpinRoulette(/* Data o sázkách    TO DO! */)
+        {
+
+            int winningNumber = RandomNumberGenerator.GetInt32(0, 37);
+
+            // Logika pro výpočet výhry a uložení do DB     TO DO!
+            
+            return Json(new { winningNumber = winningNumber });
         }
         
     }
