@@ -22,7 +22,7 @@ namespace utb.loterie.Controllers
             return View();
         }
 
-        // --- RULETA (PŮVODNÍ STAV - BEZ LOGIKY) ---
+        // --- RULETA (IMPLEMENTOVÁNO) ---
 
         public IActionResult Roulette()
         {
@@ -30,14 +30,35 @@ namespace utb.loterie.Controllers
         }
 
         [HttpPost]
-        public IActionResult SpinRoulette(/* Data o sázkách - TO DO! */)
+        public async Task<IActionResult> SpinRoulette([FromBody] RouletteViewModel model)
         {
-            int winningNumber = RandomNumberGenerator.GetInt32(0, 37);
+            try
+            {
+                if (!ModelState.IsValid)
+                    return BadRequest(new { message = "Neplatná sázka." });
 
-            // Logika pro výpočet výhry a uložení do DB     TO DO!
+                var userIdString = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                if (!int.TryParse(userIdString, out int userId))
+                    return Unauthorized(new { message = "Nejste přihlášen." });
 
-            // Vracíme jen číslo, aby se točilo kolo, ale peníze se nemění
-            return Json(new { winningNumber = winningNumber });
+                var result = await _gameService.PlayRouletteAsync(userId, model.Stake, model.BetType, model.BetValue);
+
+                if (string.IsNullOrEmpty(result.Message))
+                    return BadRequest(new { message = "Chyba transakce (nedostatek peněz?)." });
+
+                return Json(new
+                {
+                    winningNumber = result.RolledNumber,
+                    isWin = result.IsWin,
+                    winAmount = result.WinAmount,
+                    balance = result.NewBalance,
+                    message = result.Message
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = ex.Message });
+            }
         }
 
         // --- KOSTKY / DICE (IMPLEMENTOVÁNO) ---

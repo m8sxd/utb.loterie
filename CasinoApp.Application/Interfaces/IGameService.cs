@@ -5,6 +5,7 @@ namespace CasinoApp.Application.Interfaces
     public interface IGameService
     {
         Task<GameResult> PlayDiceAsync(int userId, decimal stake, int guess);
+        Task<GameResult> PlayRouletteAsync(int userId, decimal stake, string betType, string betValue);
     }
 
     public class GameResult
