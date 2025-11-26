@@ -216,14 +216,25 @@
         msg.innerText = `Vsazeno na: ${text}`;
         msg.className = "mt-2 text-warning fw-bold fs-5";
     }
-
     async function spinWheel() {
-        const stake = document.getElementById('stakeInput').value;
+        const stakeInput = document.getElementById('stakeInput');
+        const stake = parseFloat(stakeInput.value);
         const btn = document.getElementById('spinBtn');
         const display = document.getElementById("resultDisplay");
         const msg = document.getElementById("statusMessage");
+        const balanceEl = document.getElementById('userBalance');
 
         if (!currentBet.type) return;
+
+        if (balanceEl) {
+            let currentText = balanceEl.innerText.replace(/[^0-9]/g, '');
+            let currentBalance = parseFloat(currentText);
+
+            if (currentBalance >= stake) {
+                let newVisualBalance = currentBalance - stake;
+                balanceEl.innerText = new Intl.NumberFormat('cs-CZ').format(newVisualBalance) + " Kč";
+            }
+        }
 
         btn.disabled = true;
         display.innerText = "...";
@@ -237,7 +248,7 @@
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    stake: parseFloat(stake),
+                    stake: stake,
                     betType: currentBet.type,
                     betValue: currentBet.value
                 })
@@ -277,11 +288,12 @@
                     msg.className = "mt-2 text-danger fw-bold fs-4";
                 }
 
-                const balanceEl = document.getElementById('userBalance');
                 if (balanceEl) {
                     balanceEl.innerText = new Intl.NumberFormat('cs-CZ').format(data.balance) + " Kč";
-                    balanceEl.style.color = "#fff";
-                    setTimeout(() => balanceEl.style.color = "", 500);
+                    if(data.isWin) {
+                        balanceEl.style.color = "#00ff00";
+                        setTimeout(() => balanceEl.style.color = "", 500);
+                    }
                 }
 
                 btn.disabled = false;

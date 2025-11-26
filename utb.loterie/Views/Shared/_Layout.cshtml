@@ -33,9 +33,15 @@
                         <li class="nav-item">
                             <a class="nav-link text-light" asp-area="" asp-controller="Home" asp-action="Index">Domů</a>
                         </li>
+
                         <li class="nav-item">
                             <a class="nav-link text-warning fw-bold" asp-controller="Games" asp-action="Dice">
                                 <i class="fas fa-dice me-1"></i> Lucky Dice
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-warning fw-bold" asp-controller="Games" asp-action="Roulette">
+                                <i class="fas fa-circle-notch me-1"></i> Ruleta
                             </a>
                         </li>
                     </ul>
@@ -43,7 +49,7 @@
                     <ul class="navbar-nav align-items-center">
                         @if (User.Identity != null && User.Identity.IsAuthenticated)
                         {
-                            // --- Získání zůstatku ---
+                            // --- LOGIKA PRO ZÍSKÁNÍ ZŮSTATKU ---
                             decimal balance = 0;
                             var userIdStr = User.FindFirstValue(ClaimTypes.NameIdentifier);
                             if (int.TryParse(userIdStr, out int userId))
@@ -54,12 +60,12 @@
                                     balance = wallet.Balance;
                                 }
                             }
-                            // ------------------------
+                            // ------------------------------------
 
                             <li class="nav-item me-3 border-end border-secondary pe-3">
                                 <div class="d-flex flex-column align-items-end lh-1">
                                     <span class="text-secondary" style="font-size: 0.7rem; text-transform: uppercase;">Zůstatek</span>
-                                    <span class="text-warning fw-bold font-monospace" style="font-size: 1.1rem;">
+                                    <span id="userBalance" class="text-warning fw-bold font-monospace" style="font-size: 1.1rem;">
                                         @balance.ToString("N0") Kč
                                     </span>
                                 </div>
