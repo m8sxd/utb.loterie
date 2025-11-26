@@ -8,7 +8,7 @@ Vytvořit vícevrstvou webovou aplikaci umožňující uživatelům:
 
 * [x] Registrovat se a spravovat svůj účet. ✅
 * [ ] Sázet na sportovní události. 🔄 *(API pro vložení sázky je hotové, chybí data událostí)*
-* [ ] Hrát základní kasinové hry. ❌
+* [x] Hrát základní kasinové hry. ✅ *(Implementovány a plně funkční hry Kostky a Ruleta)*
 * [ ] Kupovat losy do loterie. ❌
 * [x] Spravovat peněžní zůstatek (wallet). ✅
 
@@ -16,11 +16,11 @@ Vytvořit vícevrstvou webovou aplikaci umožňující uživatelům:
 
 ## Funkční požadavky
 
-* **Registrace a přihlášení uživatele** ✅ *(Implementováno přes AccountController a Cookies)*
-* **Peněženka a transakce** (vklady, výběry, sázky, výhry) ✅ *(Atomické transakce fungují)*
-* **Správa sázek a zobrazování výsledků** 🔄 *(Logika pro uložení sázky existuje, vyhodnocení zatím chybí)*
+* **Registrace a přihlášení uživatele** ✅ *(Implementováno přes AccountController a Cookies, včetně validace)*
+* **Peněženka a transakce** (vklady, výběry, sázky, výhry) ✅ *(Atomické transakce fungují, zůstatek se aktualizuje v reálném čase)*
+* **Správa sázek a zobrazování výsledků** 🔄 *(Sportovní sázení - logika připravena, kasino hry - hotovo)*
 * **Správa loterie** (tikety, losování) ❌
-* **Záznam kasinových her a výsledků** ❌
+* **Záznam kasinových her a výsledků** ✅ *(Výsledky her se zapisují do historie transakcí)*
 * **Role uživatelů:** `User`, `Admin` ❌ *(Zatím jen User bez rolí)*
 * **Admin správa** kurzů, událostí a losování ❌
 
@@ -40,8 +40,8 @@ Vytvořit vícevrstvou webovou aplikaci umožňující uživatelům:
 * `Odds` ❌
 * `LotteryDraws` ❌
 * `LotteryTickets` ❌
-* `Game` ✅ *(Entita existuje v Domain)*
-* `GameSessions` ❌
+* `Game` ✅
+* `GameSessions` 🔄 *(Historie her je aktuálně řešena přes entitu Transactions)*
 
 ### Stručný přehled tabulek
 
@@ -64,18 +64,20 @@ Vytvořit vícevrstvou webovou aplikaci umožňující uživatelům:
 
 | Sloupec | Popis |
 | :--- | :--- |
-| Type | Deposit, Withdrawal, BetStake, BetWin |
+| Type | Deposit, Withdrawal, BetStake, BetWin, GameWin, GameLoss |
 | Amount | Částka transakce |
+| Note | Detail transakce (např. "Dice: Tip 6, Hod 6") |
 
 **Bets / Events** 🔄
 
 * Uživatel vytváří sázky na události. ✅ *(Přes API `BetsController`)*
 * Výpočet výsledků probíhá na základě kurzů a výsledku události. ❌ *(Logika připravena, ale chybí data událostí)*
 
-**Lottery a Casino** ❌
+**Lottery a Casino** ✅
 
-* Uživatel může koupit tiket nebo hrát hru.
-* Ukládá se výsledek a případná výhra.
+* **Lucky Dice:** Uživatel sází na číslo 1-6. Výhra 6x vklad. ✅
+* **Ruleta:** Uživatel sází na číslo (36x) nebo barvu (2x). Animace a vyhodnocení funguje. ✅
+* Výsledky se ukládají a okamžitě ovlivňují zůstatek uživatele.
 
 ### Vztahy mezi entitami
 
