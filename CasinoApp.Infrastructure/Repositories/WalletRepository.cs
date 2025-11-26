@@ -18,20 +18,29 @@ namespace CasinoApp.Infrastructure.Repositories
 
         public async Task<Wallet?> GetByIdAsync(Guid walletId)
         {
-            return await _context.Wallets.FindAsync(walletId);
+            return await _context.Wallets
+                .AsNoTracking() 
+                .FirstOrDefaultAsync(w => w.Id == walletId);
         }
 
-        public async Task<Wallet?> GetByUserIdAsync(int userId) 
+        public async Task<Wallet?> GetByUserIdAsync(int userId)
         {
             return await _context.Wallets
+                .AsNoTracking() 
                 .Include(w => w.Transactions)
                 .FirstOrDefaultAsync(w => w.UserId == userId);
         }
 
-        public Task UpdateAsync(Wallet wallet)
+        public async Task UpdateAsync(Wallet wallet)
         {
-            _context.Entry(wallet).State = EntityState.Modified;
-            return Task.CompletedTask;
+            await _context.Database.ExecuteSqlInterpolatedAsync(
+                $"UPDATE Wallets SET Balance = {wallet.Balance}, Reserved = {wallet.Reserved} WHERE Id = {wallet.Id}"
+            );
+        }
+
+        public async Task AddTransactionAsync(Transaction transaction)
+        {
+            await _context.Transactions.AddAsync(transaction);
         }
     }
 }

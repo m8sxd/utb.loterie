@@ -1,0 +1,180 @@
+﻿@model utb.loterie.Models.DiceViewModel
+@{
+    ViewData["Title"] = "Lucky Dice";
+}
+
+<style>
+    .dice-container {
+        font-size: 10rem;
+        color: #d4af37;
+        text-shadow: 0 0 20px rgba(212, 175, 55, 0.5);
+        transition: transform 0.5s ease;
+    }
+
+    .guess-btn {
+        width: 50px;
+        height: 50px;
+        font-weight: bold;
+        font-size: 1.2rem;
+        border: 2px solid #444;
+    }
+
+        .guess-btn.active {
+            background-color: #d4af37;
+            color: black;
+            border-color: #fff;
+            box-shadow: 0 0 10px #d4af37;
+        }
+
+    .rolling {
+        animation: shake 0.5s infinite;
+    }
+
+    @@keyframes shake {
+        0% {
+            transform: rotate(0deg);
+        }
+
+        25% {
+            transform: rotate(10deg);
+        }
+
+        50% {
+            transform: rotate(0deg);
+        }
+
+        75% {
+            transform: rotate(-10deg);
+        }
+
+        100% {
+            transform: rotate(0deg);
+        }
+    }
+
+    }
+</style>
+
+<div class="container mt-5 text-center">
+    <h1 class="display-4 fw-bold text-white mb-2">LUCKY <span class="text-warning">DICE</span></h1>
+    <p class="text-muted mb-5">Tipni číslo, hoď kostkou a vyhraj 6násobek!</p>
+
+    <div class="row justify-content-center align-items-center">
+        <div class="col-md-4 mb-4">
+            <div class="card bg-dark border-secondary p-4 shadow-lg">
+                <label class="text-white fw-bold mb-2">Váš Tip (1-6):</label>
+                <div class="d-flex justify-content-center gap-2 mb-4 flex-wrap">
+                    @for (int i = 1; i <= 6; i++)
+                    {
+                        <button type="button" class="btn btn-outline-secondary guess-btn @(i == 6 ? "active" : "")"
+                                onclick="selectGuess(@i, this)">
+                            @i
+                        </button>
+                    }
+                </div>
+
+                <input type="hidden" id="guessInput" value="6">
+
+                <label class="text-white fw-bold mb-2">Sázka (Kč):</label>
+                <input type="number" id="stakeInput" class="form-control text-center fw-bold mb-4" value="100" min="10" max="10000">
+
+                <button id="rollBtn" onclick="rollDice()" class="btn btn-warning w-100 py-3 fw-bold fs-5 rounded-pill">
+                    HODIT KOSTKOU 🎲
+                </button>
+            </div>
+        </div>
+
+        <div class="col-md-6 text-center">
+            <div class="dice-wrapper py-5">
+                <i id="diceIcon" class="fas fa-dice-six dice-container"></i>
+            </div>
+
+            <h3 id="resultMessage" class="mt-4 text-white" style="min-height: 1.5em;">Hodně štěstí!</h3>
+        </div>
+    </div>
+</div>
+
+<script>
+    const diceIcons = [
+        '',
+        'fa-dice-one',
+        'fa-dice-two',
+        'fa-dice-three',
+        'fa-dice-four',
+        'fa-dice-five',
+        'fa-dice-six'
+    ];
+
+    function selectGuess(num, btn) {
+        document.getElementById('guessInput').value = num;
+
+        document.querySelectorAll('.guess-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+    }
+
+    async function rollDice() {
+        const stake = document.getElementById('stakeInput').value;
+        const guess = document.getElementById('guessInput').value;
+        const btn = document.getElementById('rollBtn');
+        const dice = document.getElementById('diceIcon');
+        const msg = document.getElementById('resultMessage');
+
+        btn.disabled = true;
+        msg.innerText = "Kostka se točí...";
+        msg.className = "mt-4 text-info";
+
+        dice.classList.add('rolling');
+        let interval = setInterval(() => {
+            const randomNum = Math.floor(Math.random() * 6) + 1;
+            dice.className = `fas ${diceIcons[randomNum]} dice-container rolling`;
+        }, 100);
+
+        try {
+            const response = await fetch('/Games/PlayDice', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    stake: parseFloat(stake),
+                    guess: parseInt(guess)
+                })
+            });
+
+            const data = await response.json();
+
+            setTimeout(() => {
+                clearInterval(interval);
+                dice.classList.remove('rolling');
+
+                if (!response.ok) {
+                    msg.innerText = data.message || "Chyba serveru.";
+                    msg.className = "mt-4 text-danger";
+                    btn.disabled = false;
+                    return;
+                }
+
+                dice.className = `fas ${diceIcons[data.rolled]} dice-container`;
+
+                if (data.isWin) {
+                    msg.innerText = `${data.message}`;
+                    msg.className = "mt-4 text-success fw-bold fs-3";
+                    dice.style.color = "#00ff00";
+                } else {
+                    msg.innerText = data.message;
+                    msg.className = "mt-4 text-danger fw-bold fs-3";
+                    dice.style.color = "#ff0000";
+                }
+
+                setTimeout(() => dice.style.color = "#d4af37", 2000);
+
+                btn.disabled = false;
+            }, 1000);
+
+        } catch (error) {
+            clearInterval(interval);
+            dice.classList.remove('rolling');
+            console.error(error);
+            msg.innerText = "Chyba připojení.";
+            btn.disabled = false;
+        }
+    }
+</script>

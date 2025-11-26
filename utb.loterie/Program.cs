@@ -46,6 +46,7 @@ builder.Services.AddScoped<IBetRepository, BetRepository>();
 builder.Services.AddScoped<ITransactionManager, TransactionManager>();
 builder.Services.AddScoped<IBettingService, BettingService>();
 builder.Services.AddScoped<WalletService>();
+builder.Services.AddScoped<IGameService, GameService>();
 
 var app = builder.Build();
 
