@@ -1,5 +1,5 @@
 @{
-    ViewData["Title"] = "Neon Slots";
+ViewData["Title"] = "Neon Slots";
 }
 
 <style>
@@ -44,8 +44,10 @@
         transform: translateY(0);
     }
     @@keyframes blurSpin {
-        0% { transform: translateY(-10px) scaleY(1.1); opacity: 0.7; }
-        100% { transform: translateY(10px) scaleY(0.9); opacity: 0.7; }
+        0% { transform: translateY(-10px) scaleY(1.1);
+            opacity: 0.7; }
+        100% { transform: translateY(10px) scaleY(0.9); opacity: 0.7;
+        }
     }
     .display-panel {
         background: #222;
@@ -60,8 +62,10 @@
         text-shadow: 0 0 20px gold;
     }
     @@keyframes winPulse {
-        from { transform: scale(1); }
-        to { transform: scale(1.1); }
+        from { transform: scale(1);
+        }
+        to { transform: scale(1.1);
+        }
     }
 </style>
 
@@ -75,27 +79,31 @@
             <h3 class="m-0" id="statusText">Vsaďte a točte!</h3>
         </div>
 
-        <div class="reels-display mb-4">
-            <div class="reel-window"><div id="reel1" class="reel-symbol">🍒</div></div>
-            <div class="reel-window"><div id="reel2" class="reel-symbol">🍋</div></div>
-            <div class="reel-window"><div id="reel3" class="reel-symbol">🍊</div></div>
-        </div>
+    <div class="reels-display mb-4">
+        <div class="reel-window"><div id="reel1" class="reel-symbol">🍒</div></div>
 
-        <div class="mb-4 text-center">
-            <label class="text-white fw-bold me-2">Sázka:</label>
-            <input type="number" id="stakeInput" class="form-control d-inline-block w-25 text-center fw-bold" value="10" min="1" max="1000">
-            <span class="text-white fw-bold ms-1">Kč</span>
-        </div>
+    <div class="reel-window"><div id="reel2" class="reel-symbol">🍋</div></div>
+    <div class="reel-window"><div id="reel3" class="reel-symbol">🍊</div></div>
+    </div>
+
+    <div class="mb-4 text-center">
+        <label class="text-white fw-bold me-2">Sázka:</label>
+    <input type="number" id="stakeInput" class="form-control d-inline-block w-25 text-center fw-bold" value="10" min="1" max="1000">
+        <span class="text-white fw-bold ms-1">Kč</span>
+   
+     </div>
 
         <div class="text-center">
-            <button id="spinBtn" onclick="spin()" class="btn btn-warning btn-lg px-5 py-3 fw-bold rounded-pill shadow fs-4">
-                ROZTOČIT
-            </button>
-        </div>
-        
+        <button id="spinBtn" onclick="spin()" class="btn btn-warning btn-lg px-5 py-3 fw-bold rounded-pill shadow fs-4">
+        ROZTOČIT
+    </button>
+    </div>
+
         <div class="text-white mt-4 text-center small opacity-75">
+
             <p class="mb-1 fw-bold">Výhry za 3 stejné symboly:</p>
-             💎 x100 | 🔔 x50 | 🍇 x20 | 🍋 x10 | 🍒 x5
+            💎 x100 |
+            🔔 x50 | 🍇 x20 | 🍋 x10 | 🍒 x5
         </div>
     </div>
 </div>
@@ -103,11 +111,10 @@
 <script>
     const reels = [document.getElementById('reel1'), document.getElementById('reel2'), document.getElementById('reel3')];
     const statusText = document.getElementById('statusText');
-    const spinBtn = document.getElementById('spinBtn');
+    ;
     const stakeInput = document.getElementById('stakeInput');
     const tempSymbols = ["🍒", "🍋", "🍊", "🍇", "🔔", "💎", "💩"];
     let spinningIntervals = [];
-
     async function spin() {
         const stakeAmount = parseFloat(stakeInput.value);
         if (isNaN(stakeAmount) || stakeAmount <= 0) {
@@ -119,35 +126,32 @@
         statusText.innerText = "Točím...";
         statusText.classList.remove('win-animation');
         spinningIntervals = [];
-
         reels.forEach((reel, index) => {
             reel.parentElement.classList.add('spinning');
             const interval = setInterval(() => {
                 reel.innerText = tempSymbols[Math.floor(Math.random() * tempSymbols.length)];
             }, 100);
-            spinningIntervals.push(interval);
+        spinningIntervals.push(interval);
+    });
+        try {
+            // Volání endpointu na serveru
+            const response = await fetch('/Games/SpinSlots', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ stake: stakeAmount })
+
         });
 
-        try {
-            // Volání nového endpointu na serveru
-            const response = await fetch('/Games/SpinSlots', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ stake: stakeAmount }) // Posíláme sázku
-            });
-            
             if (!response.ok) {
-                 const errorData = await response.json();
-                 throw new Error(errorData.message || "Chyba serveru");
+                const errorData = await response.json();
+                throw new Error(errorData.message || "Chyba serveru");
             }
 
             const data = await response.json();
-
             for (let i = 0; i < 3; i++) {
                 await new Promise(r => setTimeout(r, 500));
-                clearInterval(spinningIntervals[i]);
+clearInterval(spinningIntervals[i]);
                 reels[i].parentElement.classList.remove('spinning');
-                // Nastavení symbolů, které vrátil server
                 reels[i].innerText = data.reels[i];
             }
 
@@ -157,7 +161,18 @@
             } else {
                 statusText.innerText = data.message;
             }
-            // Zde můžete aktualizovat zůstatek v hlavičce (data.balance)
+
+            // --- PŘIDÁNO: AKTUALIZACE ZŮSTATKU V HLAVIČCE ---
+            const balanceElement = document.getElementById("userBalance");
+            if (balanceElement) {
+                balanceElement.innerText = new Intl.NumberFormat('cs-CZ').format(data.balance) + " Kč";
+
+                if(data.isWin) {
+                    balanceElement.style.color = "#00ff00";
+                    setTimeout(() => balanceElement.style.color = "", 500);
+                }
+            }
+            // --------------------------------------------------
 
         } catch (error) {
             console.error(error);
