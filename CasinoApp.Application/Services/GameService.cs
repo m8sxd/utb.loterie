@@ -166,5 +166,94 @@ namespace CasinoApp.Application.Services
 
             return result;
         }
+        public async Task<GameResult> PlaySlotsAsync(int userId, decimal stake)
+        {
+            var result = new GameResult();
+
+            if (stake <= 0) { result.Message = "Sázka musí být kladná."; return result; }
+
+            await _transactionManager.ExecuteTransactionAsync(async () =>
+            {
+                var wallet = await _walletRepository.GetByUserIdAsync(userId);
+
+                if (wallet == null || wallet.Balance < stake)
+                {
+                    result.Message = "Nedostatek prostředků.";
+                    return;
+                }
+
+                // 1. Definice symbolů a výplat
+                var paytable = new Dictionary<string, decimal>
+                {
+                    { "🍒", 5m },   // Třešně - 5x
+                    { "🍋", 10m },  // Citron - 10x
+                    { "🍇", 20m },  // Hrozny - 20x
+                    { "🔔", 50m },  // Zvonky - 50x
+                    { "💎", 100m }, // Diamant - 100x
+                    { "💩", 0m }    // Smůla - 0x
+                };
+                string[] availableSymbols = paytable.Keys.ToArray();
+
+                // 2. Generování 3 symbolů (válců)
+                string[] reels = new string[3];
+                for (int i = 0; i < 3; i++)
+                {
+                    reels[i] = availableSymbols[_random.Next(0, availableSymbols.Length)];
+                }
+                result.Reels = reels; // Uložíme pro frontend
+
+                // 3. Vyhodnocení výhry (3 stejné)
+                bool isWin = false;
+                decimal multiplier = 0;
+
+                if (reels[0] == reels[1] && reels[1] == reels[2])
+                {
+                    string winningSymbol = reels[0];
+                    multiplier = paytable[winningSymbol];
+                    if (multiplier > 0)
+                    {
+                        isWin = true;
+                    }
+                }
+
+                result.IsWin = isWin;
+                decimal winAmount = 0;
+
+                // 4. Aktualizace zůstatku
+                if (isWin)
+                {
+                    // Výhra: Vklad se vrací + zisk (stake * multiplier)
+                    winAmount = stake + (stake * multiplier);
+                    wallet.Balance = wallet.Balance - stake + winAmount;
+                    result.Message = $"VÝHRA! Tři {reels[0]}.";
+                }
+                else
+                {
+                    // Prohra: Jen se odečte sázka
+                    wallet.Balance -= stake;
+                    result.Message = "Prohra. Zkus to znovu.";
+                }
+
+                result.WinAmount = winAmount;
+                result.NewBalance = wallet.Balance;
+
+                // 5. Záznam transakce
+                var transaction = new Transaction
+                {
+                    Id = Guid.NewGuid(),
+                    WalletId = wallet.Id,
+                    Type = isWin ? "SlotsWin" : "SlotsLoss",
+                    Amount = isWin ? (winAmount - stake) : -stake,
+                    BalanceAfter = wallet.Balance,
+                    Note = $"Slots: {string.Join(" ", reels)}",
+                    CreatedAt = DateTime.UtcNow
+                };
+
+                await _walletRepository.AddTransactionAsync(transaction);
+                await _walletRepository.UpdateAsync(wallet);
+            });
+
+            return result;
+        }
     }
 }

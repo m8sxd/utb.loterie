@@ -100,5 +100,44 @@ namespace utb.loterie.Controllers
                 return StatusCode(500, new { message = ex.Message });
             }
         }
+        [HttpGet]
+        public IActionResult Slots()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> SpinSlots([FromBody] SlotsViewModel model)
+        {
+            try
+            {
+                if (!ModelState.IsValid)
+                    return BadRequest(new { message = "Neplatná sázka." });
+
+                var userIdString = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                if (!int.TryParse(userIdString, out int userId))
+                    return Unauthorized(new { message = "Nejste přihlášen." });
+
+                // Volání nové služby
+                var result = await _gameService.PlaySlotsAsync(userId, model.Stake);
+
+                if (string.IsNullOrEmpty(result.Message))
+                    return BadRequest(new { message = "Chyba transakce (nedostatek peněz?)." });
+
+                // Vracíme JSON včetně symbolů na válcích
+                return Json(new
+                {
+                    reels = result.Reels,
+                    isWin = result.IsWin,
+                    winAmount = result.WinAmount,
+                    balance = result.NewBalance,
+                    message = result.Message
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = ex.Message });
+            }
+        }
     }
 }

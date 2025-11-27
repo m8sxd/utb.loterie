@@ -1,0 +1,171 @@
+@{
+    ViewData["Title"] = "Neon Slots";
+}
+
+<style>
+    .slot-machine-container {
+        background: linear-gradient(45deg, #2b0000, #1a1a1a);
+        border: 10px solid #d4af37;
+        border-radius: 20px;
+        padding: 30px;
+        box-shadow: 0 0 50px rgba(212, 175, 55, 0.5);
+        max-width: 600px;
+        margin: 0 auto;
+    }
+    .reels-display {
+        display: flex;
+        justify-content: space-between;
+        background-color: #000;
+        padding: 20px;
+        border-radius: 10px;
+        border: 3px solid #555;
+        box-shadow: inset 0 0 20px #000;
+    }
+    .reel-window {
+        width: 30%;
+        height: 150px;
+        background: linear-gradient(to bottom, #fff 0%, #e0e0e0 50%, #fff 100%);
+        border: 4px solid #333;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+        position: relative;
+    }
+    .reel-symbol {
+        font-size: 80px;
+        line-height: 150px;
+        transition: all 0.1s ease-out;
+    }
+    .spinning .reel-symbol {
+        animation: blurSpin 0.1s infinite linear;
+        filter: blur(5px);
+        transform: translateY(0);
+    }
+    @@keyframes blurSpin {
+        0% { transform: translateY(-10px) scaleY(1.1); opacity: 0.7; }
+        100% { transform: translateY(10px) scaleY(0.9); opacity: 0.7; }
+    }
+    .display-panel {
+        background: #222;
+        border: 2px solid #555;
+        color: #d4af37;
+        font-family: 'Courier New', monospace;
+        font-weight: bold;
+    }
+    .win-animation {
+        animation: winPulse 0.5s infinite alternate;
+        color: #fff !important;
+        text-shadow: 0 0 20px gold;
+    }
+    @@keyframes winPulse {
+        from { transform: scale(1); }
+        to { transform: scale(1.1); }
+    }
+</style>
+
+<div class="container mt-5 mb-5">
+    <div class="text-center mb-4">
+        <h1 class="display-4 fw-bold text-white">NEON <span class="text-warning">SLOTS</span></h1>
+    </div>
+
+    <div class="slot-machine-container">
+        <div class="display-panel p-3 mb-4 text-center rounded">
+            <h3 class="m-0" id="statusText">Vsaďte a točte!</h3>
+        </div>
+
+        <div class="reels-display mb-4">
+            <div class="reel-window"><div id="reel1" class="reel-symbol">🍒</div></div>
+            <div class="reel-window"><div id="reel2" class="reel-symbol">🍋</div></div>
+            <div class="reel-window"><div id="reel3" class="reel-symbol">🍊</div></div>
+        </div>
+
+        <div class="mb-4 text-center">
+            <label class="text-white fw-bold me-2">Sázka:</label>
+            <input type="number" id="stakeInput" class="form-control d-inline-block w-25 text-center fw-bold" value="10" min="1" max="1000">
+            <span class="text-white fw-bold ms-1">Kč</span>
+        </div>
+
+        <div class="text-center">
+            <button id="spinBtn" onclick="spin()" class="btn btn-warning btn-lg px-5 py-3 fw-bold rounded-pill shadow fs-4">
+                ROZTOČIT
+            </button>
+        </div>
+        
+        <div class="text-white mt-4 text-center small opacity-75">
+            <p class="mb-1 fw-bold">Výhry za 3 stejné symboly:</p>
+             💎 x100 | 🔔 x50 | 🍇 x20 | 🍋 x10 | 🍒 x5
+        </div>
+    </div>
+</div>
+
+<script>
+    const reels = [document.getElementById('reel1'), document.getElementById('reel2'), document.getElementById('reel3')];
+    const statusText = document.getElementById('statusText');
+    const spinBtn = document.getElementById('spinBtn');
+    const stakeInput = document.getElementById('stakeInput');
+    const tempSymbols = ["🍒", "🍋", "🍊", "🍇", "🔔", "💎", "💩"];
+    let spinningIntervals = [];
+
+    async function spin() {
+        const stakeAmount = parseFloat(stakeInput.value);
+        if (isNaN(stakeAmount) || stakeAmount <= 0) {
+            alert("Zadejte platnou sázku.");
+            return;
+        }
+
+        spinBtn.disabled = true;
+        statusText.innerText = "Točím...";
+        statusText.classList.remove('win-animation');
+        spinningIntervals = [];
+
+        reels.forEach((reel, index) => {
+            reel.parentElement.classList.add('spinning');
+            const interval = setInterval(() => {
+                reel.innerText = tempSymbols[Math.floor(Math.random() * tempSymbols.length)];
+            }, 100);
+            spinningIntervals.push(interval);
+        });
+
+        try {
+            // Volání nového endpointu na serveru
+            const response = await fetch('/Games/SpinSlots', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ stake: stakeAmount }) // Posíláme sázku
+            });
+            
+            if (!response.ok) {
+                 const errorData = await response.json();
+                 throw new Error(errorData.message || "Chyba serveru");
+            }
+
+            const data = await response.json();
+
+            for (let i = 0; i < 3; i++) {
+                await new Promise(r => setTimeout(r, 500));
+                clearInterval(spinningIntervals[i]);
+                reels[i].parentElement.classList.remove('spinning');
+                // Nastavení symbolů, které vrátil server
+                reels[i].innerText = data.reels[i];
+            }
+
+            if (data.isWin) {
+                statusText.innerText = `🎉 ${data.message} (+${data.winAmount} Kč) 🎉`;
+                statusText.classList.add('win-animation');
+            } else {
+                statusText.innerText = data.message;
+            }
+            // Zde můžete aktualizovat zůstatek v hlavičce (data.balance)
+
+        } catch (error) {
+            console.error(error);
+            statusText.innerText = error.message;
+            spinningIntervals.forEach(clearInterval);
+            reels.forEach(r => r.parentElement.classList.remove('spinning'));
+        } finally {
+            spinBtn.disabled = false;
+        }
+    }
+</script>
