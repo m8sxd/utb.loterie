@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using CasinoApp.Domain.Models.Blackjack;
 
 namespace CasinoApp.Application.Interfaces
 {
@@ -8,6 +9,15 @@ namespace CasinoApp.Application.Interfaces
         Task<GameResult> PlayRouletteAsync(int userId, decimal stake, string betType, string betValue);
         
         Task<GameResult> PlaySlotsAsync(int userId, decimal stake);
+        
+        // 1. Zahájení nové hry (rozdání karet)
+        Task<BlackjackGameState> StartBlackjackAsync(int userId, decimal stake);
+
+        // 2. Hráč chce další kartu (Hit)
+        Task<BlackjackGameState> BlackjackHitAsync(Guid gameId, int userId);
+
+        // 3. Hráč končí tah (Stand), hraje dealer
+        Task<BlackjackGameState> BlackjackStandAsync(Guid gameId, int userId);
     }
 
     public class GameResult
@@ -18,5 +28,23 @@ namespace CasinoApp.Application.Interfaces
         public decimal NewBalance { get; set; }
         public string Message { get; set; }
         public string[] Reels { get; set; }
+    }
+    
+    public class BlackjackGameState
+    {
+        public Guid GameId { get; set; } 
+        
+        public List<Card> PlayerCards { get; set; } = new List<Card>();
+        public List<Card> DealerCards { get; set; } = new List<Card>();
+        
+        public int PlayerScore { get; set; }
+        public int DealerScore { get; set; }
+        
+        public string Status { get; set; }
+
+        public string Message { get; set; } 
+        public decimal NewBalance { get; set; } 
+        public decimal WinAmount { get; set; } 
+        public bool IsWin { get; set; } 
     }
 }

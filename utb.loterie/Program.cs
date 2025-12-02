@@ -4,10 +4,14 @@ using CasinoApp.Infrastructure.Database;
 using CasinoApp.Infrastructure.Repositories;
 using Microsoft.EntityFrameworkCore;
 using System.Reflection;
+using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddControllersWithViews();
+builder.Services.AddControllersWithViews().AddJsonOptions(options =>
+{
+    options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+});
 
 builder.Services.AddAuthentication("CookieAuth")
     .AddCookie("CookieAuth", options =>
@@ -47,6 +51,7 @@ builder.Services.AddScoped<ITransactionManager, TransactionManager>();
 builder.Services.AddScoped<IBettingService, BettingService>();
 builder.Services.AddScoped<WalletService>();
 builder.Services.AddScoped<IGameService, GameService>();
+builder.Services.AddScoped<IBlackjackGameRepository, BlackjackGameRepository>();
 
 var app = builder.Build();
 
@@ -86,7 +91,7 @@ using (var scope = app.Services.CreateScope())
     catch (Exception ex)
     {
         var logger = services.GetRequiredService<ILogger<Program>>();
-        logger.LogError(ex, "Došlo k chybì pøi migraci databáze.");
+        logger.LogError(ex, "Doï¿½lo k chybï¿½ pï¿½i migraci databï¿½ze.");
     }
 }
 

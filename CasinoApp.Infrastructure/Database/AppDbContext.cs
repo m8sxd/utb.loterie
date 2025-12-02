@@ -8,12 +8,15 @@ namespace CasinoApp.Infrastructure.Database
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
 
         public DbSet<User> Users { get; set; }
+        
         public DbSet<Game> Games { get; set; }
         public DbSet<Wallet> Wallets { get; set; }
         public DbSet<Transaction> Transactions { get; set; }
         public DbSet<Bet> Bets { get; set; }
+        
         public DbSet<BetSelection> BetSelections { get; set; }
-
+        
+        public DbSet<BlackjackGame> BlackjackGames { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -51,6 +54,15 @@ namespace CasinoApp.Infrastructure.Database
                 e.HasOne(b => b.Wallet)
                     .WithMany() 
                     .HasForeignKey(b => b.WalletId);
+            });
+            
+            modelBuilder.Entity<BlackjackGame>(e =>
+            {
+                e.HasKey(b => b.Id);
+                e.HasOne(b => b.User)
+                    .WithMany()
+                    .HasForeignKey(b => b.UserId)
+                    .OnDelete(DeleteBehavior.Cascade);
             });
         }
     }

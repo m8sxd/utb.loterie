@@ -1,0 +1,367 @@
+@{
+    ViewData["Title"] = "Blackjack";
+}
+
+<style>
+    /* --- Herní stůl a rozložení --- */
+    .blackjack-table {
+        background-color: #0f3b25; /* Tmavě zelené plátno */
+        border: 12px solid #5c3a13; /* Dřevěný rám */
+        border-radius: 30px;
+        padding: 30px;
+        box-shadow: inset 0 0 100px #000;
+        min-height: 600px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+    }
+
+    .hand-area {
+        margin-bottom: 20px;
+        text-align: center;
+    }
+
+    .hand-title {
+        color: #d4af37; /* Zlatá */
+        font-weight: bold;
+        text-transform: uppercase;
+        margin-bottom: 10px;
+        text-shadow: 1px 1px 2px black;
+    }
+
+    .score-display {
+        display: inline-block;
+        background: #222;
+        color: #fff;
+        padding: 5px 15px;
+        border-radius: 15px;
+        font-weight: bold;
+        border: 2px solid #d4af37;
+        margin-left: 10px;
+    }
+
+    /* --- Karty --- */
+    .cards-container {
+        display: flex;
+        justify-content: center;
+        gap: 10px;
+        min-height: 140px; /* Aby se oblast nezmenšila, když nejsou karty */
+    }
+
+    .card {
+        width: 90px;
+        height: 130px;
+        background-color: #fff;
+        border-radius: 8px;
+        box-shadow: 2px 2px 5px rgba(0,0,0,0.5);
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        padding: 10px;
+        font-weight: bold;
+        font-size: 1.5rem;
+        position: relative;
+        transition: transform 0.3s;
+    }
+    
+    /* Karta lícem dolů (skrytá) */
+    .card.face-down {
+        background: repeating-linear-gradient(
+            45deg,
+            #b00000,
+            #b00000 10px,
+            #8b0000 10px,
+            #8b0000 20px
+        );
+        border: 2px solid #fff;
+    }
+    
+    /* Nově rozdaná karta - animace příletu */
+    .card.new-card {
+        animation: dealCard 0.5s ease-out;
+    }
+    @@keyframes dealCard {
+        from { opacity: 0; transform: translateY(-50px) scale(0.8); }
+        to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    /* Barvy karet */
+    .suit-hearts, .suit-diamonds { color: #d00000; }
+    .suit-clubs, .suit-spades { color: #222; }
+
+    .card-corner-top { align-self: flex-start; line-height: 1; }
+    .card-center-suit { font-size: 2.5rem; align-self: center; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); }
+    .card-corner-bottom { align-self: flex-end; transform: rotate(180deg); line-height: 1; }
+
+    /* --- Ovládací prvky --- */
+    .controls-area {
+        background: rgba(0,0,0,0.6);
+        padding: 20px;
+        border-radius: 20px;
+        border: 2px solid #d4af37;
+        text-align: center;
+    }
+
+    #message-area {
+        font-size: 1.2rem;
+        font-weight: bold;
+        min-height: 1.5em;
+    }
+    
+    /* Animace výsledku */
+    .win-pulse { animation: winPulseAnim 0.8s infinite alternate; color: #4ade80 !important; }
+    .lose-pulse { color: #ef4444 !important; }
+    @@keyframes winPulseAnim { from { text-shadow: 0 0 5px gold; transform: scale(1); } to { text-shadow: 0 0 20px gold; transform: scale(1.05); } }
+</style>
+
+<div class="container mt-5 mb-5">
+    <div class="text-center mb-4">
+        <h1 class="display-4 fw-bold text-white">ROYAL <span class="text-warning">BLACKJACK</span></h1>
+        <p class="text-muted">Dealer stojí na 17. Blackjack vyplácí 3:2.</p>
+    </div>
+
+    <div class="blackjack-table shadow-lg">
+        
+        <div class="hand-area dealer-area">
+            <div class="hand-title">Dealer <span id="dealer-score" class="score-display" style="visibility: hidden;">0</span></div>
+            <div id="dealerCards" class="cards-container">
+                </div>
+        </div>
+
+        <div class="controls-area my-3">
+            <div id="message-area" class="text-white mb-3">Vsaďte si a začněte hru.</div>
+
+            <div id="bettingControls">
+                <div class="d-inline-block me-2">
+                    <div class="input-group">
+                        <span class="input-group-text bg-dark text-warning fw-bold border-secondary">Sázka</span>
+                        <input type="number" id="stakeInput" class="form-control fw-bold text-center bg-dark text-white border-secondary" value="100" min="10" max="10000" style="width: 100px;">
+                        <span class="input-group-text bg-dark text-warning fw-bold border-secondary">Kč</span>
+                    </div>
+                </div>
+                <button id="dealBtn" class="btn btn-warning btn-lg fw-bold px-4 rounded-pill">ROZDAT KARTY</button>
+            </div>
+
+            <div id="gameControls" style="display: none;">
+                <button id="hitBtn" class="btn btn-success btn-lg fw-bold px-4 me-3 rounded-pill">
+                    <i class="fas fa-plus me-2"></i> HIT (Další)
+                </button>
+                <button id="standBtn" class="btn btn-danger btn-lg fw-bold px-4 rounded-pill">
+                    <i class="fas fa-hand-paper me-2"></i> STAND (Stačím)
+                </button>
+            </div>
+        </div>
+
+        <div class="hand-area player-area">
+            <div class="hand-title">Hráč <span id="player-score" class="score-display" style="visibility: hidden;">0</span></div>
+            <div id="playerCards" class="cards-container">
+                </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Globální proměnná pro uložení ID aktuální hry
+    let currentGameId = null;
+
+    // Elementy DOM
+    const elements = {
+        dealBtn: document.getElementById('dealBtn'),
+        hitBtn: document.getElementById('hitBtn'),
+        standBtn: document.getElementById('standBtn'),
+        bettingControls: document.getElementById('bettingControls'),
+        gameControls: document.getElementById('gameControls'),
+        messageArea: document.getElementById('message-area'),
+        stakeInput: document.getElementById('stakeInput'),
+        dealerCards: document.getElementById('dealerCards'),
+        playerCards: document.getElementById('playerCards'),
+        dealerScore: document.getElementById('dealer-score'),
+        playerScore: document.getElementById('player-score'),
+        balance: document.getElementById('userBalance')
+    };
+
+    // --- Event Listeners pro tlačítka ---
+    elements.dealBtn.addEventListener('click', startGame);
+    elements.hitBtn.addEventListener('click', hit);
+    elements.standBtn.addEventListener('click', stand);
+
+    // --- Funkce pro komunikaci se serverem ---
+
+    // 1. Zahájení hry (POST /Blackjack/Start)
+    async function startGame() {
+        const stake = parseFloat(elements.stakeInput.value);
+        if (isNaN(stake) || stake <= 0) { showMessage("Neplatná sázka.", "text-danger"); return; }
+
+        setControlsDisabled(true);
+        showMessage("Rozdávám karty...");
+
+        try {
+            const response = await fetch('/Blackjack/Start', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ stake: stake })
+            });
+            handleApiResponse(response);
+        } catch (e) { handleError(e); }
+    }
+
+    // 2. Další karta (POST /Blackjack/Hit)
+    async function hit() {
+        if (!currentGameId) return;
+        setControlsDisabled(true);
+        try {
+            const response = await fetch('/Blackjack/Hit', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ gameId: currentGameId })
+            });
+            handleApiResponse(response);
+        } catch (e) { handleError(e); }
+    }
+
+    // 3. Ukončení tahu (POST /Blackjack/Stand)
+    async function stand() {
+        if (!currentGameId) return;
+        setControlsDisabled(true);
+        showMessage("Dealer hraje...");
+        try {
+            const response = await fetch('/Blackjack/Stand', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ gameId: currentGameId })
+            });
+            handleApiResponse(response);
+        } catch (e) { handleError(e); }
+    }
+
+    // --- Pomocné funkce pro zpracování odpovědi a UI ---
+
+    async function handleApiResponse(response) {
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.message || "Chyba serveru.");
+        }
+        const gameState = await response.json();
+        updateUI(gameState);
+        setControlsDisabled(false);
+    }
+
+    // OPRAVENÁ FUNKCE handleError
+    function handleError(e) {
+        console.log("--- SPUŠTĚNA NOVÁ VERZE handleError ---");
+        console.error(e);
+
+        // 2. Rozhodneme, zda chybu ukázat uživateli
+        if (e.message && e.message.includes("Hra již byla dokončena")) {
+        } else {
+            showMessage(e.message, "text-danger fw-bold");
+        }
+        
+        setControlsDisabled(false);
+        elements.bettingControls.style.display = 'block';
+        elements.gameControls.style.display = 'none';
+        currentGameId = null; 
+    }
+
+    // Hlavní funkce pro překreslení obrazovky podle stavu ze serveru
+    function updateUI(gameState) {
+        currentGameId = gameState.gameId;
+
+        // 1. Zobrazení zpráv a skóre
+        showMessage(gameState.message, gameState.isWin ? "text-success fw-bold win-pulse" : (gameState.status === "Finished" && gameState.winAmount === 0 ? "text-danger fw-bold lose-pulse" : "text-white"));
+        
+        elements.dealerScore.innerText = gameState.dealerScore;
+        elements.dealerScore.style.visibility = 'visible';
+        elements.playerScore.innerText = gameState.playerScore;
+        elements.playerScore.style.visibility = 'visible';
+
+        // 2. Vykreslení karet
+        renderCards(elements.dealerCards, gameState.dealerCards);
+        renderCards(elements.playerCards, gameState.playerCards);
+
+        // 3. Přepínání tlačítek podle stavu hry
+        if (gameState.status === "PlayerTurn") {
+            elements.bettingControls.style.display = 'none';
+            elements.gameControls.style.display = 'block';
+        } else {
+            // Hra skončila (Finished)
+            elements.bettingControls.style.display = 'block';
+            elements.gameControls.style.display = 'none';
+            currentGameId = null; // Reset ID hry
+        }
+
+        // 4. Aktualizace zůstatku v hlavičce
+        if (elements.balance) {
+            elements.balance.innerText = new Intl.NumberFormat('cs-CZ').format(gameState.newBalance) + " Kč";
+            if (gameState.winAmount > 0) {
+                elements.balance.style.color = "#00ff00";
+                setTimeout(() => elements.balance.style.color = "", 1000);
+            }
+        }
+    }
+
+    // Funkce pro vygenerování HTML karet
+    function renderCards(container, cardsData) {
+        container.innerHTML = ''; // Vyčistit staré karty
+        cardsData.forEach((cardData, index) => {
+            const cardEl = document.createElement('div');
+            // Přidáme třídu 'new-card' pro animaci příletu
+            cardEl.className = `card new-card`;
+            // Nastavíme malé zpoždění animace pro každou další kartu
+            cardEl.style.animationDelay = `${index * 100}ms`;
+
+            if (!cardData.isFaceUp) {
+                cardEl.classList.add('face-down');
+            } else {
+                const suitClass = `suit-${cardData.suit.toLowerCase()}`;
+                cardEl.classList.add(suitClass);
+                const rankSymbol = getRankSymbol(cardData.rank);
+                const suitSymbol = getSuitSymbol(cardData.suit);
+
+                cardEl.innerHTML = `
+                    <div class="card-corner-top">${rankSymbol}<br>${suitSymbol}</div>
+                    <div class="card-center-suit">${suitSymbol}</div>
+                    <div class="card-corner-bottom">${rankSymbol}<br>${suitSymbol}</div>
+                `;
+            }
+            container.appendChild(cardEl);
+        });
+    }
+
+    // Pomocné funkce pro symboly
+    function getRankSymbol(rankString) {
+        // Mapování textových názvů ze serveru na symboly pro zobrazení
+        const rankMap = {
+            'Two': '2',
+            'Three': '3',
+            'Four': '4',
+            'Five': '5',
+            'Six': '6',
+            'Seven': '7',
+            'Eight': '8',
+            'Nine': '9',
+            'Ten': '10',
+            'Jack': 'J',
+            'Queen': 'Q',
+            'King': 'K',
+            'Ace': 'A'
+        };
+
+        return rankMap[rankString] || rankString;
+    }
+
+    function getSuitSymbol(suit) {
+        return { 'Hearts': '♥️', 'Diamonds': '♦️', 'Clubs': '♣️', 'Spades': '♠️' }[suit];
+    }
+
+    function showMessage(msg, className = "text-white") {
+        elements.messageArea.innerText = msg;
+        elements.messageArea.className = `mb-3 ${className}`;
+    }
+
+    function setControlsDisabled(disabled) {
+        elements.dealBtn.disabled = disabled;
+        elements.hitBtn.disabled = disabled;
+        elements.standBtn.disabled = disabled;
+    }
+</script>
