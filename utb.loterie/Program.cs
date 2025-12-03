@@ -63,6 +63,7 @@ builder.Services.AddScoped<WalletService>();
 builder.Services.AddScoped<IGameService, GameService>();
 builder.Services.AddScoped<IBlackjackGameRepository, BlackjackGameRepository>();
 builder.Services.AddScoped<BaccaratService>();
+builder.Services.AddScoped<TexasHoldemService>();
 
 var app = builder.Build();
 
