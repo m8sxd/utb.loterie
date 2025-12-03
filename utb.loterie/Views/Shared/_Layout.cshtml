@@ -10,12 +10,10 @@
     <title>@ViewData["Title"] - UTB Casino</title>
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
-
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
 </head>
-<body>
+<body class="d-flex flex-column min-vh-100" style="background-color: #121212; color: #e0e0e0;">
     <header>
         <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-dark bg-dark border-bottom border-secondary box-shadow mb-3">
             <div class="container">
@@ -33,7 +31,6 @@
                         <li class="nav-item">
                             <a class="nav-link text-light" asp-area="" asp-controller="Home" asp-action="Index">Domů</a>
                         </li>
-
                         <li class="nav-item">
                             <a class="nav-link text-warning fw-bold" asp-controller="Games" asp-action="Dice">
                                 <i class="fas fa-dice me-1"></i> Lucky Dice
@@ -49,7 +46,6 @@
                     <ul class="navbar-nav align-items-center">
                         @if (User.Identity != null && User.Identity.IsAuthenticated)
                         {
-                            // --- LOGIKA PRO ZÍSKÁNÍ ZŮSTATKU ---
                             decimal balance = 0;
                             var userIdStr = User.FindFirstValue(ClaimTypes.NameIdentifier);
                             if (int.TryParse(userIdStr, out int userId))
@@ -60,15 +56,17 @@
                                     balance = wallet.Balance;
                                 }
                             }
-                            // ------------------------------------
-
-                            <li class="nav-item me-3 border-end border-secondary pe-3">
+                            <li class="nav-item me-3 border-end border-secondary pe-3 d-flex align-items-center gap-3">
                                 <div class="d-flex flex-column align-items-end lh-1">
                                     <span class="text-secondary" style="font-size: 0.7rem; text-transform: uppercase;">Zůstatek</span>
                                     <span id="userBalance" class="text-warning fw-bold font-monospace" style="font-size: 1.1rem;">
                                         @balance.ToString("N0") Kč
                                     </span>
                                 </div>
+
+                                <button type="button" class="btn btn-success btn-sm fw-bold shadow-sm" data-bs-toggle="modal" data-bs-target="#depositModal">
+                                    <i class="fas fa-wallet me-1"></i> Vložit
+                                </button>
                             </li>
 
                             <li class="nav-item me-3">
@@ -115,7 +113,50 @@
             &copy; 2025 - UTB Casino - <span class="text-warning">Hrajte zodpovědně</span>
         </div>
     </footer>
+    <div class="modal fade" id="depositModal" tabindex="-1" aria-labelledby="depositLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content bg-dark text-white border border-secondary shadow-lg">
 
+                <div class="modal-header border-secondary">
+                    <h5 class="modal-title text-warning" id="depositLabel">
+                        <i class="fas fa-coins me-2"></i>Dobít kredit
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+
+                <div class="modal-body text-center p-4">
+                    <p class="text-muted mb-4">Vyberte částku pro vložení na váš herní účet (Demo).</p>
+
+                    <form method="post" asp-controller="Wallet" asp-action="Deposit">
+
+                        <div class="d-grid gap-3 mb-3">
+
+                            <button type="submit" name="amount" value="1000" class="btn btn-outline-success py-3 d-flex justify-content-center align-items-center gap-2 deposit-btn">
+                                <span class="fw-bold">+ 1 000 Kč</span>
+                                <span class="badge bg-success">Start</span>
+                            </button>
+
+                            <button type="submit" name="amount" value="5000" class="btn btn-outline-warning py-3 d-flex justify-content-center align-items-center gap-2 deposit-btn">
+                                <span class="fw-bold">+ 5 000 Kč</span>
+                                <span class="badge bg-warning text-dark">Hráč</span>
+                            </button>
+
+                            <button type="submit" name="amount" value="50000" class="btn btn-outline-danger py-3 d-flex justify-content-center align-items-center gap-2 deposit-btn">
+                                <span class="fw-bold">+ 50 000 Kč</span>
+                                <span class="badge bg-danger">VIP</span>
+                            </button>
+
+                        </div>
+
+                        <p class="small text-muted mt-3 mb-0">
+                            <i class="fas fa-info-circle me-1"></i>Peníze budou ihned připsány.
+                        </p>
+                    </form>
+                </div>
+
+            </div>
+        </div>
+    </div>
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>

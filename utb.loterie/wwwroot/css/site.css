@@ -1,12 +1,7 @@
 body {
-    background-color: #121212 !important; 
+    background-color: #121212 !important;
     color: #e0e0e0 !important;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-}
-
-.text-warning, .text-gold {
-    color: #d4af37 !important;
-    text-shadow: 0 0 10px rgba(212, 175, 55, 0.3);
 }
 
 .navbar {
@@ -14,16 +9,13 @@ body {
     border-bottom: 1px solid #333;
 }
 
-.btn-warning, .btn-gold {
-    background-color: #d4af37 !important;
-    border-color: #d4af37 !important;
-    color: #000 !important;
-    font-weight: bold;
+.nav-link {
+    color: rgba(255, 255, 255, .75) !important;
+    transition: color 0.3s;
 }
 
-    .btn-warning:hover {
-        background-color: #fff !important;
-        box-shadow: 0 0 15px #d4af37;
+    .nav-link:hover {
+        color: #fff !important;
     }
 
 .card, .form-control {
@@ -32,10 +24,59 @@ body {
     border: 1px solid #444;
 }
 
-.nav-link {
-    color: rgba(255,255,255,.75) !important;
+.text-warning, .text-gold {
+    color: #d4af37 !important;
+    text-shadow: 0 0 10px rgba(212, 175, 55, 0.3);
 }
 
-    .nav-link:hover {
-        color: #fff !important;
+.btn-warning, .btn-gold {
+    background-color: #d4af37 !important;
+    border-color: #d4af37 !important;
+    color: #000 !important;
+    font-weight: bold;
+    transition: all 0.3s ease;
+}
+
+    .btn-warning:hover, .btn-gold:hover {
+        background-color: #fff !important;
+        border-color: #fff !important;
+        box-shadow: 0 0 15px #d4af37;
     }
+
+.deposit-btn {
+    border-width: 2px; 
+    transition: all 0.2s ease-in-out;
+    position: relative;
+}
+
+    .deposit-btn:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    }
+
+.btn-outline-success:hover .badge {
+    background-color: #fff !important;
+    color: #198754 !important;
+}
+
+.btn-outline-warning:hover {
+    color: #000 !important;
+}
+
+    .btn-outline-warning:hover .badge {
+        background-color: #000 !important;
+        color: #ffc107 !important;
+        border: 1px solid #000;
+    }
+
+.btn-outline-danger:hover .badge {
+    background-color: #fff !important;
+    color: #dc3545 !important;
+}
+.badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    padding-top: 0.35em;
+}

@@ -13,6 +13,17 @@ builder.Services.AddControllersWithViews().AddJsonOptions(options =>
     options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
 });
 
+builder.Services.AddDistributedMemoryCache();
+builder.Services.AddSession(options =>
+{
+    options.IdleTimeout = TimeSpan.FromMinutes(30);
+    options.Cookie.HttpOnly = true;
+    options.Cookie.IsEssential = true;
+});
+
+
+builder.Services.AddHttpContextAccessor(); 
+
 builder.Services.AddAuthentication("CookieAuth")
     .AddCookie("CookieAuth", options =>
     {
@@ -34,8 +45,7 @@ builder.Services.AddSwaggerGen(options =>
 });
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
-
-var serverVersion = new MariaDbServerVersion(new Version(10, 4, 28)); 
+var serverVersion = new MariaDbServerVersion(new Version(10, 4, 28));
 
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseMySql(connectionString, serverVersion, b =>
@@ -45,8 +55,8 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 );
 
 builder.Services.AddScoped<IWalletRepository, WalletRepository>();
-builder.Services.AddScoped<IUserRepository, UserRepository>(); 
-builder.Services.AddScoped<IBetRepository, BetRepository>();   
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IBetRepository, BetRepository>();
 builder.Services.AddScoped<ITransactionManager, TransactionManager>();
 builder.Services.AddScoped<IBettingService, BettingService>();
 builder.Services.AddScoped<WalletService>();
@@ -63,16 +73,19 @@ if (app.Environment.IsDevelopment())
 }
 else
 {
-    app.UseExceptionHandler("/Home/Error"); 
+    app.UseExceptionHandler("/Home/Error");
     app.UseHsts();
 }
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
+
 app.UseRouting();
 
 app.UseAuthentication();
 app.UseAuthorization();
+
+app.UseSession();
 
 app.MapControllerRoute(
     name: "default",
@@ -91,7 +104,7 @@ using (var scope = app.Services.CreateScope())
     catch (Exception ex)
     {
         var logger = services.GetRequiredService<ILogger<Program>>();
-        logger.LogError(ex, "Do�lo k chyb� p�i migraci datab�ze.");
+        logger.LogError(ex, "Došlo k chybě při migraci databáze.");
     }
 }
 

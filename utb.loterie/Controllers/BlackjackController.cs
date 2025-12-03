@@ -2,31 +2,25 @@ using CasinoApp.Application.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
-using utb.loterie.Models; // Import našich nových ViewModelů
+using utb.loterie.Models;
 
-namespace utb.loterie.Controllers
+namespace CasinoApp.Controllers
 {
-    [Authorize] // Blackjack mohou hrát jen přihlášení
+    [Authorize]
     public class BlackjackController : Controller
     {
         private readonly IGameService _gameService;
 
-        // Injectujeme naši službu, která obsahuje veškerou logiku
         public BlackjackController(IGameService gameService)
         {
             _gameService = gameService;
         }
 
-        // GET: /Blackjack
-        // Zobrazí prázdnou herní stránku
         public IActionResult Index()
         {
             return View();
         }
 
-        // ================= API ENDPOINTY PRO JS =================
-
-        // POST: /Blackjack/Start
         [HttpPost]
         public async Task<IActionResult> Start([FromBody] BlackjackStartViewModel model)
         {
@@ -35,18 +29,15 @@ namespace utb.loterie.Controllers
             try
             {
                 int userId = GetCurrentUserId();
-                // Voláme službu a získáme úvodní stav hry
                 var gameState = await _gameService.StartBlackjackAsync(userId, model.Stake);
-                return Ok(gameState); // Vracíme JSON se stavem
+                return Ok(gameState);
             }
             catch (Exception ex)
             {
-                // Zachytíme chyby (např. nedostatek peněz) a pošleme je frontendu
                 return BadRequest(new { message = ex.Message });
             }
         }
 
-        // POST: /Blackjack/Hit
         [HttpPost]
         public async Task<IActionResult> Hit([FromBody] BlackjackActionViewModel model)
         {
@@ -64,7 +55,6 @@ namespace utb.loterie.Controllers
             }
         }
 
-        // POST: /Blackjack/Stand
         [HttpPost]
         public async Task<IActionResult> Stand([FromBody] BlackjackActionViewModel model)
         {
@@ -82,7 +72,6 @@ namespace utb.loterie.Controllers
             }
         }
 
-        // Pomocná metoda pro získání ID přihlášeného uživatele
         private int GetCurrentUserId()
         {
             var userIdStr = User.FindFirstValue(ClaimTypes.NameIdentifier);

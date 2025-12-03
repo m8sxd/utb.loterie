@@ -1,4 +1,3 @@
-// Soubor: Models/Blackjack/BlackjackLogic.cs
 using System;
 using System.Collections.Generic;
 using System.Linq;

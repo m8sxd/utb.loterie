@@ -1,120 +1,228 @@
 @{
-ViewData["Title"] = "Neon Slots";
+    ViewData["Title"] = "Neon Slots";
 }
 
 <style>
-    .slot-machine-container {
-        background: linear-gradient(45deg, #2b0000, #1a1a1a);
-        border: 10px solid #d4af37;
-        border-radius: 20px;
-        padding: 30px;
-        box-shadow: 0 0 50px rgba(212, 175, 55, 0.5);
-        max-width: 600px;
+    .slot-machine-frame {
+        background: linear-gradient(180deg, #2b002b 0%, #1a0b1a 100%); 
+        border: 4px solid #d4af37;
+        border-radius: 30px;
+        padding: 40px;
+        box-shadow: 0 0 20px #d4af37, inset 0 0 60px #000;
+        max-width: 700px;
         margin: 0 auto;
+        position: relative;
     }
+
+        .slot-machine-frame::before {
+            content: '';
+            position: absolute;
+            top: 10px;
+            bottom: 10px;
+            left: 10px;
+            right: 10px;
+            border: 2px solid #ff00de;
+            border-radius: 20px;
+            box-shadow: 0 0 10px #ff00de, inset 0 0 10px #ff00de;
+            pointer-events: none;
+        }
+
     .reels-display {
         display: flex;
         justify-content: space-between;
         background-color: #000;
-        padding: 20px;
-        border-radius: 10px;
-        border: 3px solid #555;
-        box-shadow: inset 0 0 20px #000;
+        padding: 15px;
+        border-radius: 15px;
+        border: 5px solid #333;
+        box-shadow: inset 0 0 30px #000;
+        gap: 10px;
     }
+
     .reel-window {
-        width: 30%;
-        height: 150px;
-        background: linear-gradient(to bottom, #fff 0%, #e0e0e0 50%, #fff 100%);
-        border: 4px solid #333;
-        border-radius: 8px;
+        width: 32%;
+        height: 160px;
+        background: linear-gradient(to bottom, #e0e0e0 0%, #ffffff 50%, #e0e0e0 100%);
+        border: 2px solid #555;
+        border-radius: 10px;
         display: flex;
         align-items: center;
         justify-content: center;
         overflow: hidden;
         position: relative;
+        box-shadow: inset 0 0 15px rgba(0,0,0,0.5);
     }
+
+        .reel-window::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 50%;
+            background: linear-gradient(to bottom, rgba(255,255,255,0.4) 0%, rgba(255,255,255,0) 100%);
+            pointer-events: none;
+        }
+
     .reel-symbol {
-        font-size: 80px;
-        line-height: 150px;
-        transition: all 0.1s ease-out;
+        font-size: 90px;
+        line-height: 160px;
+        filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
     }
+
     .spinning .reel-symbol {
         animation: blurSpin 0.1s infinite linear;
-        filter: blur(5px);
-        transform: translateY(0);
+        filter: blur(8px);
+        transform: scaleY(1.2);
     }
+
     @@keyframes blurSpin {
-        0% { transform: translateY(-10px) scaleY(1.1);
-            opacity: 0.7; }
-        100% { transform: translateY(10px) scaleY(0.9); opacity: 0.7;
-        }
+        0%
+
+    {
+        transform: translateY(-20px) scaleY(1.2);
+        opacity: 0.8;
     }
+
+    100% {
+        transform: translateY(20px) scaleY(1.2);
+        opacity: 0.8;
+    }
+
+    }
+
     .display-panel {
-        background: #222;
-        border: 2px solid #555;
+        background: #111;
+        border: 2px solid #d4af37;
         color: #d4af37;
         font-family: 'Courier New', monospace;
-        font-weight: bold;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        box-shadow: 0 0 10px rgba(212, 175, 55, 0.3);
+        height: 60px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
     }
+
     .win-animation {
         animation: winPulse 0.5s infinite alternate;
-        color: #fff !important;
-        text-shadow: 0 0 20px gold;
+        color: #00ff00 !important;
+        text-shadow: 0 0 20px #00ff00;
     }
     @@keyframes winPulse {
-        from { transform: scale(1);
-        }
-        to { transform: scale(1.1);
-        }
+        from
+
+    {
+        transform: scale(1);
     }
+
+    to {
+        transform: scale(1.1);
+    }
+
+    }
+
+    .bet-input-group {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-bottom: 20px;
+    }
+
+        .bet-input-group .input-group-text {
+            background-color: #222;
+            color: #d4af37;
+            border: 1px solid #444;
+            font-weight: bold;
+        }
+
+    #stakeInput {
+        background-color: #111;
+        color: #fff;
+        border: 1px solid #444;
+        font-size: 1.5rem;
+        max-width: 120px;
+    }
+
+    .paytable-grid {
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        gap: 10px;
+        margin-top: 20px;
+    }
+
+    .pay-item {
+        background: rgba(0,0,0,0.5);
+        border: 1px solid #444;
+        border-radius: 10px;
+        padding: 5px;
+        text-align: center;
+    }
+
+    .pay-symbol {
+        font-size: 1.5rem;
+    }
+
+    .pay-val {
+        color: #d4af37;
+        font-weight: bold;
+        font-size: 0.9rem;
+    }
+
 </style>
 
 <div class="container mt-5 mb-5">
     <div class="text-center mb-4">
-        <h1 class="display-4 fw-bold text-white">NEON <span class="text-warning">SLOTS</span></h1>
+        <h1 class="display-4 fw-bold text-white">NEON <span style="color: #ff00de; text-shadow: 0 0 10px #ff00de;">SLOTS</span></h1>
+        <p class="text-muted">Spojte 3 symboly a vyhrajte!</p>
     </div>
 
-    <div class="slot-machine-container">
-        <div class="display-panel p-3 mb-4 text-center rounded">
-            <h3 class="m-0" id="statusText">Vsaďte a točte!</h3>
+    <div class="slot-machine-frame">
+
+        <div class="display-panel mb-4 rounded">
+            <h4 class="m-0 fw-bold" id="statusText">VSAĎTE A TOČTE!</h4>
         </div>
 
-    <div class="reels-display mb-4">
-        <div class="reel-window"><div id="reel1" class="reel-symbol">🍒</div></div>
-
-    <div class="reel-window"><div id="reel2" class="reel-symbol">🍋</div></div>
-    <div class="reel-window"><div id="reel3" class="reel-symbol">🍊</div></div>
-    </div>
-
-    <div class="mb-4 text-center">
-        <label class="text-white fw-bold me-2">Sázka:</label>
-    <input type="number" id="stakeInput" class="form-control d-inline-block w-25 text-center fw-bold" value="10" min="1" max="1000">
-        <span class="text-white fw-bold ms-1">Kč</span>
-   
-     </div>
-
-        <div class="text-center">
-        <button id="spinBtn" onclick="spin()" class="btn btn-warning btn-lg px-5 py-3 fw-bold rounded-pill shadow fs-4">
-        ROZTOČIT
-    </button>
-    </div>
-
-        <div class="text-white mt-4 text-center small opacity-75">
-
-            <p class="mb-1 fw-bold">Výhry za 3 stejné symboly:</p>
-            💎 x100 |
-            🔔 x50 | 🍇 x20 | 🍋 x10 | 🍒 x5
+        <div class="reels-display mb-4">
+            <div class="reel-window"><div id="reel1" class="reel-symbol">🍒</div></div>
+            <div class="reel-window"><div id="reel2" class="reel-symbol">💎</div></div>
+            <div class="reel-window"><div id="reel3" class="reel-symbol">🔔</div></div>
         </div>
+
+        <div class="text-center position-relative" style="z-index: 2;">
+            <div class="bet-input-group">
+                <span class="input-group-text">SÁZKA</span>
+                <input type="number" id="stakeInput" class="form-control text-center fw-bold" value="10" min="1" max="1000">
+                <span class="input-group-text">Kč</span>
+            </div>
+
+            <button id="spinBtn" onclick="spin()" class="btn btn-outline-warning btn-lg px-5 py-3 fw-bold rounded-pill shadow fs-4 d-inline-flex align-items-center gap-2" style="border-width: 3px;">
+                <span>ROZTOČIT</span>
+                <i class="fas fa-sync-alt"></i>
+            </button>
+        </div>
+
+        <div class="paytable-grid">
+            <div class="pay-item"><div class="pay-symbol">💎</div><div class="pay-val">x100</div></div>
+            <div class="pay-item"><div class="pay-symbol">🔔</div><div class="pay-val">x50</div></div>
+            <div class="pay-item"><div class="pay-symbol">🍇</div><div class="pay-val">x20</div></div>
+            <div class="pay-item"><div class="pay-symbol">🍋</div><div class="pay-val">x10</div></div>
+            <div class="pay-item"><div class="pay-symbol">🍒</div><div class="pay-val">x5</div></div>
+        </div>
+
     </div>
 </div>
 
 <script>
     const reels = [document.getElementById('reel1'), document.getElementById('reel2'), document.getElementById('reel3')];
     const statusText = document.getElementById('statusText');
-    ;
     const stakeInput = document.getElementById('stakeInput');
-    const tempSymbols = ["🍒", "🍋", "🍊", "🍇", "🔔", "💎", "💩"];
+    const spinBtn = document.getElementById('spinBtn');
+
+    const tempSymbols = ["🍒", "🍋", "🍊", "🍇", "🔔", "💎", "BAR"];
+
     let spinningIntervals = [];
+
     async function spin() {
         const stakeAmount = parseFloat(stakeInput.value);
         if (isNaN(stakeAmount) || stakeAmount <= 0) {
@@ -123,24 +231,26 @@ ViewData["Title"] = "Neon Slots";
         }
 
         spinBtn.disabled = true;
-        statusText.innerText = "Točím...";
+        statusText.innerText = "TOČÍM...";
         statusText.classList.remove('win-animation');
+        statusText.style.color = "#d4af37";
+
         spinningIntervals = [];
+
         reels.forEach((reel, index) => {
             reel.parentElement.classList.add('spinning');
             const interval = setInterval(() => {
                 reel.innerText = tempSymbols[Math.floor(Math.random() * tempSymbols.length)];
-            }, 100);
-        spinningIntervals.push(interval);
-    });
-        try {
-            // Volání endpointu na serveru
-            const response = await fetch('/Games/SpinSlots', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ stake: stakeAmount })
-
+            }, 80); 
+            spinningIntervals.push(interval);
         });
+
+        try {
+            const response = await fetch('/Games/SpinSlots', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ stake: stakeAmount })
+            });
 
             if (!response.ok) {
                 const errorData = await response.json();
@@ -148,35 +258,36 @@ ViewData["Title"] = "Neon Slots";
             }
 
             const data = await response.json();
+
             for (let i = 0; i < 3; i++) {
-                await new Promise(r => setTimeout(r, 500));
-clearInterval(spinningIntervals[i]);
+                await new Promise(r => setTimeout(r, 600)); 
+                clearInterval(spinningIntervals[i]);
                 reels[i].parentElement.classList.remove('spinning');
-                reels[i].innerText = data.reels[i];
+                reels[i].innerText = data.reels[i]; 
+
+                reels[i].style.transform = "scale(1.2)";
+                setTimeout(() => reels[i].style.transform = "scale(1)", 200);
             }
 
             if (data.isWin) {
-                statusText.innerText = `🎉 ${data.message} (+${data.winAmount} Kč) 🎉`;
+                statusText.innerText = `${data.message} (+${data.winAmount} Kč)`;
                 statusText.classList.add('win-animation');
             } else {
-                statusText.innerText = data.message;
+                statusText.innerText = data.message.toUpperCase();
             }
 
-            // --- PŘIDÁNO: AKTUALIZACE ZŮSTATKU V HLAVIČCE ---
             const balanceElement = document.getElementById("userBalance");
             if (balanceElement) {
                 balanceElement.innerText = new Intl.NumberFormat('cs-CZ').format(data.balance) + " Kč";
-
                 if(data.isWin) {
                     balanceElement.style.color = "#00ff00";
-                    setTimeout(() => balanceElement.style.color = "", 500);
+                    setTimeout(() => balanceElement.style.color = "", 1500);
                 }
             }
-            // --------------------------------------------------
 
         } catch (error) {
             console.error(error);
-            statusText.innerText = error.message;
+            statusText.innerText = "CHYBA: " + error.message;
             spinningIntervals.forEach(clearInterval);
             reels.forEach(r => r.parentElement.classList.remove('spinning'));
         } finally {

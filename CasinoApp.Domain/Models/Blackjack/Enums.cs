@@ -1,4 +1,3 @@
-
 namespace CasinoApp.Domain.Models.Blackjack
 {
     public enum Suit { Clubs, Diamonds, Hearts, Spades }
