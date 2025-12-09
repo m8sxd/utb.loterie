@@ -1,53 +1,58 @@
-﻿using CasinoApp.Application.Interfaces;
-using CasinoApp.Domain.Entities;
-using Microsoft.AspNetCore.Authentication;
+﻿using CasinoApp.Domain.Entities;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using System.Security.Claims;
 using utb.loterie.Models;
 
 namespace utb.loterie.Controllers
 {
     public class AccountController : Controller
     {
-        private readonly IUserRepository _userRepository;
-        private readonly IWalletRepository _walletRepository; 
+        private readonly UserManager<User> _userManager;
+        private readonly SignInManager<User> _signInManager;
 
-        public AccountController(IUserRepository userRepository, IWalletRepository walletRepository)
+        public AccountController(UserManager<User> userManager, SignInManager<User> signInManager)
         {
-            _userRepository = userRepository;
-            _walletRepository = walletRepository;
+            _userManager = userManager;
+            _signInManager = signInManager;
         }
 
         [HttpGet]
-        public IActionResult Login()
+        public IActionResult Login(string? returnUrl = null)
         {
+            ViewData["ReturnUrl"] = returnUrl;
             return View();
         }
 
         [HttpPost]
-        public async Task<IActionResult> Login(LoginViewModel model)
+        public async Task<IActionResult> Login(LoginViewModel model, string? returnUrl = null)
         {
+            ViewData["ReturnUrl"] = returnUrl;
             if (!ModelState.IsValid) return View(model);
 
-            var user = await _userRepository.GetByUsernameAsync(model.Username);
+           
+            var result = await _signInManager.PasswordSignInAsync(
+                model.Username,
+                model.Password,
+                isPersistent: false, 
+                lockoutOnFailure: false); 
 
-            if (user == null || user.PasswordHash != model.Password)
+            if (result.Succeeded)
             {
-                ModelState.AddModelError("", "Neplatné jméno nebo heslo.");
-                return View(model);
+                if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
+                {
+                    return Redirect(returnUrl);
+                }
+                return RedirectToAction("Index", "Home");
             }
 
-            var claims = new List<Claim>
+            if (result.IsLockedOut)
             {
-                new Claim(ClaimTypes.Name, user.Username),
-                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-                new Claim(ClaimTypes.Email, user.Email)
-            };
-
-            var claimsIdentity = new ClaimsIdentity(claims, "CookieAuth");
-            await HttpContext.SignInAsync("CookieAuth", new ClaimsPrincipal(claimsIdentity));
-
-            return RedirectToAction("Index", "Home");
+                ModelState.AddModelError("", "Účet je dočasně uzamčen kvůli mnoha nezdařeným pokusům.");
+                return View(model);
+            }
+            
+            ModelState.AddModelError("", "Neplatné přihlašovací údaje.");
+            return View(model);
         }
 
         [HttpGet]
@@ -61,38 +66,41 @@ namespace utb.loterie.Controllers
         {
             if (!ModelState.IsValid) return View(model);
 
-            var existingUser = await _userRepository.GetByUsernameAsync(model.Username);
-            if (existingUser != null)
-            {
-                ModelState.AddModelError("Username", "Uživatel s tímto jménem již existuje.");
-                return View(model);
-            }
 
-            var newUser = new User
+            var user = new User
             {
-                Username = model.Username,
-                Email = model.Email,
-                PasswordHash = model.Password
+                UserName = model.Username,
+                Email = model.Email
             };
-
+            
             var newWallet = new Wallet
             {
                 Id = Guid.NewGuid(),
                 Currency = "CZK",
-                Balance = 50000, // Vstupní bonus :)
-                ConcurrencyToken = BitConverter.GetBytes(DateTime.UtcNow.Ticks)
+                Balance = 50000,
             };
+            
+            user.Wallet = newWallet;
 
-            newUser.Wallet = newWallet; 
+            var result = await _userManager.CreateAsync(user, model.Password);
 
-            await _userRepository.AddAsync(newUser);
+            if (result.Succeeded)
+            {
+                await _signInManager.SignInAsync(user, isPersistent: false);
+                return RedirectToAction("Index", "Home");
+            }
+            
+            foreach (var error in result.Errors)
+            {
+                ModelState.AddModelError(string.Empty, error.Description);
+            }
 
-            return await Login(new LoginViewModel { Username = model.Username, Password = model.Password });
+            return View(model);
         }
 
         public async Task<IActionResult> Logout()
         {
-            await HttpContext.SignOutAsync("CookieAuth");
+            await _signInManager.SignOutAsync();
             return RedirectToAction("Index", "Home");
         }
     }

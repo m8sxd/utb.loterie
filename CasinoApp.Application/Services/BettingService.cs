@@ -5,6 +5,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+// PŘIDÁNO: Import pro Identity manažera
+using Microsoft.AspNetCore.Identity;
 
 namespace CasinoApp.Application.Services
 {
@@ -12,18 +14,20 @@ namespace CasinoApp.Application.Services
     {
         private readonly ITransactionManager _transactionManager;
         private readonly IWalletRepository _walletRepository;
-        private readonly IUserRepository _userRepository;
+
+        private readonly UserManager<User> _userManager;
         private readonly IBetRepository _betRepository;
 
         public BettingService(
             ITransactionManager transactionManager,
             IWalletRepository walletRepository,
-            IUserRepository userRepository,
+
+            UserManager<User> userManager,
             IBetRepository betRepository)
         {
             _transactionManager = transactionManager;
             _walletRepository = walletRepository;
-            _userRepository = userRepository;
+            _userManager = userManager;
             _betRepository = betRepository;
         }
 
@@ -40,7 +44,10 @@ namespace CasinoApp.Application.Services
             {
                 await _transactionManager.ExecuteTransactionAsync(async () =>
                 {
-                    var user = await _userRepository.GetByIdAsync(userId);
+
+                    var user = await _userManager.FindByIdAsync(userId.ToString());
+
+
                     var wallet = await _walletRepository.GetByUserIdAsync(userId);
 
                     if (user == null || wallet == null)
@@ -81,8 +88,13 @@ namespace CasinoApp.Application.Services
                         CreatedAt = DateTime.UtcNow
                     };
 
+
+                    if (user.Bets == null) user.Bets = new List<Bet>();
                     user.Bets.Add(newBet);
+
                     wallet.Transactions.Add(betStakeTransaction);
+
+            
 
                     result = (newBet, string.Empty);
                 });
@@ -98,7 +110,7 @@ namespace CasinoApp.Application.Services
 
             return result;
         }
-
+        
         public async Task<(bool Success, string Error)> SettleBetAsync(Guid betId, bool isWinner)
         {
             (bool Success, string Error) result = (false, "Vyhodnocení se nezdařilo.");
