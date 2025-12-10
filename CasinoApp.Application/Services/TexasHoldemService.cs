@@ -13,9 +13,7 @@ namespace CasinoApp.Application.Services
         public List<Card> Community { get; set; } = new();
         public string Stage { get; set; }
         public string Message { get; set; }
-
         public string HandStrength { get; set; }
-
         public decimal Pot { get; set; }
         public bool IsWin { get; set; }
         public bool GameOver { get; set; }
@@ -32,10 +30,12 @@ namespace CasinoApp.Application.Services
             _walletRepository = walletRepository;
         }
 
-        public async Task<TexasResult> StartGameAsync(int userId, decimal stake, Microsoft.AspNetCore.Http.ISession session)
+        public async Task<TexasResult> StartGameAsync(int userId, decimal stake, ISession session)
         {
             var wallet = await _walletRepository.GetByUserIdAsync(userId);
-            if (wallet == null || wallet.Balance < stake) throw new Exception("Nedostatek peněz.");
+
+            if (wallet == null || wallet.Balance < stake)
+                throw new InvalidOperationException("Nedostatek peněz.");
 
             wallet.Balance -= stake;
             await _walletRepository.UpdateAsync(wallet);
@@ -53,7 +53,7 @@ namespace CasinoApp.Application.Services
                 PlayerHole = playerHole,
                 DealerHole = dealerHole,
                 CommunityAll = community,
-                CommunityVisible = new List<Card>(), 
+                CommunityVisible = new List<Card>(),
                 Stage = "PreFlop",
                 Pot = stake,
                 Stake = stake
@@ -62,11 +62,10 @@ namespace CasinoApp.Application.Services
             SaveState(session, state);
 
             string strength = GetHandDescription(state.PlayerHole, state.CommunityVisible);
-
             return MapToResult(state, wallet.Balance, "Hra začala. Check nebo Bet?", strength);
         }
 
-        public async Task<TexasResult> NextStepAsync(int userId, string action, Microsoft.AspNetCore.Http.ISession session)
+        public async Task<TexasResult> NextStepAsync(int userId, string action, ISession session)
         {
             var state = LoadState(session);
             if (state == null) throw new Exception("Hra vypršela.");
@@ -75,11 +74,14 @@ namespace CasinoApp.Application.Services
 
             if (action == "Bet")
             {
-                if (wallet.Balance < state.Stake) throw new Exception("Na sázku nemáš dost peněz.");
+                if (wallet.Balance < state.Stake)
+                    throw new InvalidOperationException("Na sázku nemáš dost peněz.");
+
                 wallet.Balance -= state.Stake;
                 state.Pot += state.Stake * 2;
                 await _walletRepository.UpdateAsync(wallet);
             }
+
             if (state.Stage == "PreFlop")
             {
                 state.Stage = "Flop";
@@ -111,16 +113,16 @@ namespace CasinoApp.Application.Services
                 if (pScore > dScore)
                 {
                     win = state.Pot;
-                    msg = $"VÝHRA! Máš {pDesc}, dealer má jen {dDesc}.";
+                    msg = $"VÝHRA! Máš {pDesc}.";
                 }
                 else if (pScore < dScore)
                 {
-                    msg = $"PROHRA. Dealer má {dDesc}, ty máš jen {pDesc}.";
+                    msg = $"PROHRA. Dealer má {dDesc}.";
                 }
                 else
                 {
                     win = state.Pot / 2;
-                    msg = $"REMÍZA ({pDesc}). Vklad se vrací.";
+                    msg = "REMÍZA. Vklad se vrací.";
                 }
 
                 if (win > 0)
@@ -134,11 +136,11 @@ namespace CasinoApp.Application.Services
                 return new TexasResult
                 {
                     PlayerHole = state.PlayerHole,
-                    DealerHole = state.DealerHole,
+                    DealerHole = state.DealerHole, 
                     Community = state.CommunityVisible,
                     Stage = "Showdown",
                     Message = msg,
-                    HandStrength = pDesc, 
+                    HandStrength = pDesc,
                     Pot = state.Pot,
                     IsWin = win > 0,
                     GameOver = true,
@@ -147,14 +149,11 @@ namespace CasinoApp.Application.Services
             }
 
             SaveState(session, state);
-
-            string currentStrength = GetHandDescription(state.PlayerHole, state.CommunityVisible);
-
-            return MapToResult(state, wallet.Balance, $"{state.Stage}: Check nebo Bet?", currentStrength);
+            string strength = GetHandDescription(state.PlayerHole, state.CommunityVisible);
+            return MapToResult(state, wallet.Balance, $"{state.Stage}: Check nebo Bet?", strength);
         }
 
-        public void Fold(Microsoft.AspNetCore.Http.ISession session) => session.Remove("Texas_State");
-
+        public void Fold(ISession session) => session.Remove("Texas_State");
 
         private class GameState
         {
@@ -168,25 +167,15 @@ namespace CasinoApp.Application.Services
             public decimal Stake { get; set; }
         }
 
-        private void SaveState(Microsoft.AspNetCore.Http.ISession s, GameState state)
-            => s.SetString("Texas_State", JsonSerializer.Serialize(state));
-
-        private GameState LoadState(Microsoft.AspNetCore.Http.ISession s)
-        {
-            var json = s.GetString("Texas_State");
-            return json == null ? null : JsonSerializer.Deserialize<GameState>(json);
-        }
+        private void SaveState(ISession s, GameState state) => s.SetString("Texas_State", JsonSerializer.Serialize(state));
+        private GameState LoadState(ISession s) { var json = s.GetString("Texas_State"); return json == null ? null : JsonSerializer.Deserialize<GameState>(json); }
 
         private TexasResult MapToResult(GameState s, decimal bal, string msg, string strength)
         {
             return new TexasResult
             {
                 PlayerHole = s.PlayerHole,
-                // Skryjeme dealera: IsFaceUp = false
-                DealerHole = new List<Card> {
-                    new Card(Suit.Clubs, Rank.Two) { IsFaceUp = false },
-                    new Card(Suit.Clubs, Rank.Two) { IsFaceUp = false }
-                },
+                DealerHole = new List<Card> { new Card(Suit.Clubs, Rank.Two) { IsFaceUp = false }, new Card(Suit.Clubs, Rank.Two) { IsFaceUp = false } },
                 Community = s.CommunityVisible,
                 Stage = s.Stage,
                 Message = msg,
@@ -206,24 +195,19 @@ namespace CasinoApp.Application.Services
             return deck;
         }
 
-        private void Shuffle(List<Card> deck)
-        {
-            int n = deck.Count;
-            while (n > 1) { n--; int k = _random.Next(n + 1); (deck[k], deck[n]) = (deck[n], deck[k]); }
-        }
+        private void Shuffle(List<Card> deck) { int n = deck.Count; while (n > 1) { n--; int k = _random.Next(n + 1); (deck[k], deck[n]) = (deck[n], deck[k]); } }
 
         private string GetHandDescription(List<Card> hole, List<Card> community)
         {
             int score = EvaluateStrength(hole, community);
-
-            if (score >= 800) return "Four of a Kind (Čtveřice)";
+            if (score >= 800) return "Four of a Kind";
             if (score >= 700) return "Full House";
-            if (score >= 600) return "Flush (Barva)";
-            if (score >= 500) return "Straight (Postupka)";
-            if (score >= 400) return "Three of a Kind (Trojice)";
-            if (score >= 300) return "Two Pair (Dva páry)";
-            if (score >= 200) return "Pair (Pár)";
-            return "High Card (Vysoká karta)";
+            if (score >= 600) return "Flush";
+            if (score >= 500) return "Straight";
+            if (score >= 400) return "Three of a Kind";
+            if (score >= 300) return "Two Pair";
+            if (score >= 200) return "Pair";
+            return "High Card";
         }
 
         private int EvaluateStrength(List<Card> hole, List<Card> community)

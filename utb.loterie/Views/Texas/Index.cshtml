@@ -178,33 +178,54 @@
 </div>
 
 <script>
+
     async function start() {
         const stake = document.getElementById('stake').value;
+        const statusEl = document.getElementById('statusMsg');
+
         try {
             const res = await fetch('/Texas/Start', {
                 method: 'POST', headers: {'Content-Type':'application/json'},
                 body: JSON.stringify({ stake: parseFloat(stake) })
             });
-            if (!res.ok) throw new Error((await res.json()).message);
+
+            if (!res.ok) {
+                const err = await res.json();
+                throw new Error(err.message || "Chyba serveru");
+            }
+
             updateUI(await res.json());
-        } catch (e) { alert(e.message); }
+        } catch (e) {
+            statusEl.innerText = e.message;
+            statusEl.className = "text-danger fw-bold mb-3";
+        }
     }
 
     async function act(action) {
+        const statusEl = document.getElementById('statusMsg');
         try {
             const res = await fetch('/Texas/Action', {
                 method: 'POST', headers: {'Content-Type':'application/json'},
                 body: JSON.stringify({ action: action })
             });
-            if (!res.ok) throw new Error((await res.json()).message);
+
+            if (!res.ok) {
+                const err = await res.json();
+                throw new Error(err.message || "Chyba serveru");
+            }
+
             updateUI(await res.json());
-        } catch (e) { alert(e.message); }
+        } catch (e) {
+            statusEl.innerText = e.message;
+            statusEl.className = "text-danger fw-bold mb-3";
+        }
     }
 
     async function fold() {
         await fetch('/Texas/Fold', { method: 'POST' });
         location.reload();
     }
+
 
     function updateUI(data) {
         document.getElementById('startControls').style.display = 'none';
