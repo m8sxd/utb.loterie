@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace CasinoApp.Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class FinalMySQLIdentity : Migration
+    public partial class InitialCreate : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -357,12 +357,30 @@ namespace CasinoApp.Infrastructure.Migrations
                 .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.InsertData(
+                table: "AspNetRoles",
+                columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
+                values: new object[,]
+                {
+                    { 1, "7217E312-199C-4403-A66E-E9A62E030652", "Admin", "ADMIN" },
+                    { 2, "52337986-981C-4B11-8337-82166C274057", "User", "USER" }
+                });
+
+            migrationBuilder.InsertData(
                 table: "AspNetUsers",
                 columns: new[] { "Id", "AccessFailedCount", "ConcurrencyStamp", "Email", "EmailConfirmed", "LockoutEnabled", "LockoutEnd", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "SecurityStamp", "TwoFactorEnabled", "UserName" },
                 values: new object[,]
                 {
-                    { 1, 0, "269d636c-7955-4ee8-980e-53e86edeca2b", "admin@casino.cz", true, false, null, "ADMIN@CASINO.CZ", "ADMIN", "AQAAAAIAAYagAAAAEOl9icASrR1GYhtpadevd7l4QaF9N8flzBw7MEezhZuxlPxOMJX6l7s3ovYxbgh/Jg==", null, false, "D9F5C3B1-A2E4-4F6D-8C0B-1E3F5A7D9C1B", false, "admin" },
-                    { 2, 0, "43a5436f-3f6e-4dec-b10b-09c64393b5bc", "hrac@casino.cz", true, false, null, "HRAC@CASINO.CZ", "HRAC", "AQAAAAIAAYagAAAAEM0RxbGBS4qk/jUIHnMLlf42ISI6XhE4d0K56o2vXeUoGi+yD7npVIOG/e1xuAq4aw====", null, false, "E1F2C3B4-A5E6-4F7D-8C9B-0E1F2A3D4C5B", false, "hrac" }
+                    { 1, 0, "43f6be4c-444a-4fa0-994b-9eca394443dc", "admin@casino.cz", true, false, null, "ADMIN@CASINO.CZ", "ADMIN", "AQAAAAIAAYagAAAAEEyS9fFSe1LCS4dYuLFjJ7DCwGRMfN8aZ0aDCikMmuftD185Avsj7BJf2bWrMJRicQ==", null, false, "D9F5C3B1-A2E4-4F6D-8C0B-1E3F5A7D9C1B", false, "admin" },
+                    { 2, 0, "a37b8b76-2fae-4b58-8db0-e1889bbf38da", "hrac@casino.cz", true, false, null, "HRAC@CASINO.CZ", "HRAC", "AQAAAAIAAYagAAAAELly3tVtMdsZklu0wHqMzVmVa373ceB5j1PcqR9JiI+vWGiwkwprs/hpV8zbJuzNmw==", null, false, "E1F2C3B4-A5E6-4F7D-8C9B-0E1F2A3D4C5B", false, "hrac" }
+                });
+
+            migrationBuilder.InsertData(
+                table: "AspNetUserRoles",
+                columns: new[] { "RoleId", "UserId" },
+                values: new object[,]
+                {
+                    { 1, 1 },
+                    { 2, 2 }
                 });
 
             migrationBuilder.InsertData(

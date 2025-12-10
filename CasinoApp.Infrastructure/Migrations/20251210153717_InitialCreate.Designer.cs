@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CasinoApp.Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20251209110904_AddRolesSeeding")]
-    partial class AddRolesSeeding
+    [Migration("20251210153717_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -323,13 +323,13 @@ namespace CasinoApp.Infrastructure.Migrations
                         {
                             Id = 1,
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "053517ee-0d4b-4d06-945f-c7c65c9d4b76",
+                            ConcurrencyStamp = "43f6be4c-444a-4fa0-994b-9eca394443dc",
                             Email = "admin@casino.cz",
                             EmailConfirmed = true,
                             LockoutEnabled = false,
                             NormalizedEmail = "ADMIN@CASINO.CZ",
                             NormalizedUserName = "ADMIN",
-                            PasswordHash = "AQAAAAIAAYagAAAAEOl9icASrR1GYhtpadevd7l4QaF9N8flzBw7MEezhZuxlPxOMJX6l7s3ovYxbgh/Jg==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEEyS9fFSe1LCS4dYuLFjJ7DCwGRMfN8aZ0aDCikMmuftD185Avsj7BJf2bWrMJRicQ==",
                             PhoneNumberConfirmed = false,
                             SecurityStamp = "D9F5C3B1-A2E4-4F6D-8C0B-1E3F5A7D9C1B",
                             TwoFactorEnabled = false,
@@ -339,13 +339,13 @@ namespace CasinoApp.Infrastructure.Migrations
                         {
                             Id = 2,
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "a29bdb57-b700-4d29-bbcd-ec87c260e22c",
+                            ConcurrencyStamp = "a37b8b76-2fae-4b58-8db0-e1889bbf38da",
                             Email = "hrac@casino.cz",
                             EmailConfirmed = true,
                             LockoutEnabled = false,
                             NormalizedEmail = "HRAC@CASINO.CZ",
                             NormalizedUserName = "HRAC",
-                            PasswordHash = "AQAAAAIAAYagAAAAEM0RxbGBS4qk/jUIHnMLlf42ISI6XhE4d0K56o2vXeUoGi+yD7npVIOG/e1xuAq4aw====",
+                            PasswordHash = "AQAAAAIAAYagAAAAELly3tVtMdsZklu0wHqMzVmVa373ceB5j1PcqR9JiI+vWGiwkwprs/hpV8zbJuzNmw==",
                             PhoneNumberConfirmed = false,
                             SecurityStamp = "E1F2C3B4-A5E6-4F7D-8C9B-0E1F2A3D4C5B",
                             TwoFactorEnabled = false,
