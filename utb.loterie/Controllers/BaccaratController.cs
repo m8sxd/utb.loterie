@@ -2,10 +2,12 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
+using utb.loterie.Filters;
 
 namespace CasinoApp.Controllers
 {
     [Authorize]
+    [GameBanFilter]
     public class BaccaratController : Controller
     {
         private readonly BaccaratService _baccaratService;

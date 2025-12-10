@@ -29,15 +29,12 @@ namespace utb.loterie.Controllers
             ViewData["ReturnUrl"] = returnUrl;
             if (!ModelState.IsValid) return View(model);
 
-           
-            var result = await _signInManager.PasswordSignInAsync(
-                model.Username,
-                model.Password,
-                isPersistent: false, 
-                lockoutOnFailure: false); 
+            var user = await _userManager.FindByNameAsync(model.Username);
 
-            if (result.Succeeded)
+            if (user != null && await _userManager.CheckPasswordAsync(user, model.Password))
             {
+                await _signInManager.SignInAsync(user, isPersistent: false);
+
                 if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
                 {
                     return Redirect(returnUrl);
@@ -45,12 +42,6 @@ namespace utb.loterie.Controllers
                 return RedirectToAction("Index", "Home");
             }
 
-            if (result.IsLockedOut)
-            {
-                ModelState.AddModelError("", "Účet je dočasně uzamčen kvůli mnoha nezdařeným pokusům.");
-                return View(model);
-            }
-            
             ModelState.AddModelError("", "Neplatné přihlašovací údaje.");
             return View(model);
         }

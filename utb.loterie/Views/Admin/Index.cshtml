@@ -1,17 +1,79 @@
+@model List<utb.loterie.Controllers.UserAdminViewModel>
+
 @{
-    ViewData["Title"] = "Admin Sekce";
+    ViewData["Title"] = "Admin Panel";
 }
 
-<div class="container mt-5 text-center">
-    <div class="alert alert-danger shadow-lg p-5">
-        <h1 class="display-3 fw-bold">🕵️‍♂️ TAJNÁ ADMIN SEKCE 🕵️‍♀️</h1>
-        <hr />
-        <p class="lead">
-            Gratuluji! Pokud vidíte tuto stránku, znamená to, že vaše role <strong>Admin</strong> funguje správně.
-        </p>
-        <p>
-            Běžný hráč se sem nikdy nedostane.
-        </p>
+<div class="container mt-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="text-warning fw-bold"><i class="fas fa-users-cog me-2"></i> Správa uživatelů</h1>
+        <a asp-controller="Home" asp-action="Index" class="btn btn-outline-light">Zpět na web</a>
     </div>
-    <a asp-controller="Home" asp-action="Index" class="btn btn-outline-secondary mt-3">Zpět na domovskou stránku</a>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success border-0 shadow-sm fw-bold">
+            <i class="fas fa-check-circle me-2"></i> @TempData["Success"]
+        </div>
+    }
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger border-0 shadow-sm fw-bold">
+            <i class="fas fa-exclamation-triangle me-2"></i> @TempData["Error"]
+        </div>
+    }
+
+    <div class="card bg-dark border border-secondary shadow-lg">
+        <div class="card-body p-0">
+            <table class="table table-dark table-hover mb-0 align-middle">
+                <thead class="bg-black text-warning text-uppercase">
+                    <tr>
+                        <th class="ps-4">ID</th>
+                        <th>Jméno</th>
+                        <th>Email</th>
+                        <th class="text-center">Stav</th>
+                        <th class="text-end pe-4">Akce</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var user in Model)
+                    {
+                        <tr>
+                            <td class="ps-4 text-muted">#@user.Id</td>
+                            <td class="fw-bold fs-5">@user.Username</td>
+                            <td class="text-white-50">@user.Email</td>
+
+                            <td class="text-center">
+                                @if (user.IsBanned)
+                                {
+                                    <span class="badge bg-danger px-3 py-2">⛔ ZABANOVÁN</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-success px-3 py-2">✅ AKTIVNÍ</span>
+                                }
+                            </td>
+
+                            <td class="text-end pe-4">
+                                <form asp-action="ToggleBan" asp-route-userId="@user.Id" method="post" style="display:inline;">
+                                    @if (user.IsBanned)
+                                    {
+                                        <button type="submit" class="btn btn-sm btn-outline-success fw-bold">
+                                            <i class="fas fa-unlock me-1"></i> ODBANOVAT
+                                        </button>
+                                    }
+                                    else
+                                    {
+                                        <button type="submit" class="btn btn-sm btn-outline-danger fw-bold">
+                                            <i class="fas fa-ban me-1"></i> ZABANOVAT
+                                        </button>
+                                    }
+                                </form>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
 </div>

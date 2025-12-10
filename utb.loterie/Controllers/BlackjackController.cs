@@ -2,11 +2,13 @@ using CasinoApp.Application.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
+using utb.loterie.Filters;
 using utb.loterie.Models;
 
 namespace CasinoApp.Controllers
 {
     [Authorize]
+    [GameBanFilter]
     public class BlackjackController : Controller
     {
         private readonly IGameService _gameService;

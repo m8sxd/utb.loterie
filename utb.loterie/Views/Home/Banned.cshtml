@@ -1,0 +1,14 @@
+﻿@{
+    ViewData["Title"] = "Přístup odepřen";
+}
+<div class="container mt-5 text-center">
+    <div class="alert alert-danger p-5 shadow-lg border border-danger">
+        <h1 class="display-1 fw-bold">🚫</h1>
+        <h2 class="text-uppercase fw-bold text-danger">Zákaz hraní</h2>
+        <p class="lead mt-3">
+            Váš účet byl administrátorem omezen. Můžete se přihlásit a prohlížet web, ale máte <strong>zákaz sázet a hrát hry</strong>.
+        </p>
+        <hr class="border-danger opacity-50" />
+        <a asp-controller="Home" asp-action="Index" class="btn btn-outline-danger fw-bold px-4">Zpět na domů</a>
+    </div>
+</div>
