@@ -12,15 +12,11 @@
 
     @if (TempData["Success"] != null)
     {
-        <div class="alert alert-success border-0 shadow-sm fw-bold">
-            <i class="fas fa-check-circle me-2"></i> @TempData["Success"]
-        </div>
+        <div class="alert alert-success fw-bold">@TempData["Success"]</div>
     }
     @if (TempData["Error"] != null)
     {
-        <div class="alert alert-danger border-0 shadow-sm fw-bold">
-            <i class="fas fa-exclamation-triangle me-2"></i> @TempData["Error"]
-        </div>
+        <div class="alert alert-danger fw-bold">@TempData["Error"]</div>
     }
 
     <div class="card bg-dark border border-secondary shadow-lg">
@@ -30,7 +26,7 @@
                     <tr>
                         <th class="ps-4">ID</th>
                         <th>Jméno</th>
-                        <th>Email</th>
+                        <th>Zůstatek</th>
                         <th class="text-center">Stav</th>
                         <th class="text-end pe-4">Akce</th>
                     </tr>
@@ -40,33 +36,40 @@
                     {
                         <tr>
                             <td class="ps-4 text-muted">#@user.Id</td>
-                            <td class="fw-bold fs-5">@user.Username</td>
-                            <td class="text-white-50">@user.Email</td>
+                            <td class="fw-bold fs-5">@user.Username <div class="small text-muted" style="font-size:0.8rem">@user.Email</div></td>
+
+                            <td class="text-info fw-bold">
+                                @user.Balance.ToString("N0") Kč
+                            </td>
 
                             <td class="text-center">
                                 @if (user.IsBanned)
                                 {
-                                    <span class="badge bg-danger px-3 py-2">⛔ ZABANOVÁN</span>
+                                    <span class="badge bg-danger">⛔ ZABANOVÁN</span>
                                 }
                                 else
                                 {
-                                    <span class="badge bg-success px-3 py-2">✅ AKTIVNÍ</span>
+
+                                    <span class="badge bg-success">✅ AKTIVNÍ</span>
                                 }
                             </td>
 
                             <td class="text-end pe-4">
+                                <button type="button" class="btn btn-sm btn-outline-warning me-2"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#moneyModal"
+                                        onclick="setModalUser(@user.Id, '@user.Username')">
+                                    <i class="fas fa-coins"></i> Upravit
+                                </button>
+
                                 <form asp-action="ToggleBan" asp-route-userId="@user.Id" method="post" style="display:inline;">
                                     @if (user.IsBanned)
                                     {
-                                        <button type="submit" class="btn btn-sm btn-outline-success fw-bold">
-                                            <i class="fas fa-unlock me-1"></i> ODBANOVAT
-                                        </button>
+                                        <button type="submit" class="btn btn-sm btn-outline-success"><i class="fas fa-unlock"></i></button>
                                     }
                                     else
                                     {
-                                        <button type="submit" class="btn btn-sm btn-outline-danger fw-bold">
-                                            <i class="fas fa-ban me-1"></i> ZABANOVAT
-                                        </button>
+                                        <button type="submit" class="btn btn-sm btn-outline-danger"><i class="fas fa-ban"></i></button>
                                     }
                                 </form>
                             </td>
@@ -77,3 +80,38 @@
         </div>
     </div>
 </div>
+
+<div class="modal fade" id="moneyModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content bg-dark text-white border-warning">
+            <div class="modal-header border-secondary">
+                <h5 class="modal-title text-warning">💰 Upravit zůstatek</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <form asp-action="ChangeBalance" method="post">
+                <div class="modal-body">
+                    <p>Hráč: <span id="modalUserName" class="fw-bold text-info"></span></p>
+                    <input type="hidden" id="modalUserId" name="userId" />
+
+                    <label class="form-label">Částka (Kč)</label>
+                    <div class="input-group">
+                        <input type="number" name="amount" class="form-control bg-black text-white border-secondary fw-bold" placeholder="Např. 1000 nebo -500" required>
+                        <span class="input-group-text bg-secondary text-white">Kč</span>
+                    </div>
+                    <small class="text-muted">Pro odečtení peněz zadej záporné číslo (např. -500).</small>
+                </div>
+                <div class="modal-footer border-secondary">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Zrušit</button>
+                    <button type="submit" class="btn btn-warning fw-bold">Potvrdit změnu</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    function setModalUser(id, name) {
+        document.getElementById('modalUserId').value = id;
+        document.getElementById('modalUserName').innerText = name;
+    }
+</script>
