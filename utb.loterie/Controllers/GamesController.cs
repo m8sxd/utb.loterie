@@ -23,8 +23,7 @@ namespace utb.loterie.Controllers
         {
             return View();
         }
-
-        // --- RULETA (IMPLEMENTOVÁNO) ---
+        
 
         public IActionResult Roulette()
         {
@@ -62,8 +61,7 @@ namespace utb.loterie.Controllers
                 return StatusCode(500, new { message = ex.Message });
             }
         }
-
-        // --- KOSTKY / DICE (IMPLEMENTOVÁNO) ---
+        
 
         [HttpGet]
         public IActionResult Dice()
@@ -119,14 +117,12 @@ namespace utb.loterie.Controllers
                 var userIdString = User.FindFirstValue(ClaimTypes.NameIdentifier);
                 if (!int.TryParse(userIdString, out int userId))
                     return Unauthorized(new { message = "Nejste přihlášen." });
-
-                // Volání nové služby
+                
                 var result = await _gameService.PlaySlotsAsync(userId, model.Stake);
 
                 if (string.IsNullOrEmpty(result.Message))
                     return BadRequest(new { message = "Chyba transakce (nedostatek peněz?)." });
-
-                // Vracíme JSON včetně symbolů na válcích
+                
                 return Json(new
                 {
                     reels = result.Reels,

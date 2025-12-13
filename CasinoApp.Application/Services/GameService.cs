@@ -361,7 +361,7 @@ namespace CasinoApp.Application.Services
             });
             return gameState;
         }
-
+        
         public async Task<BlackjackGameState> BlackjackStandAsync(Guid gameId, int userId)
         {
             var gameState = new BlackjackGameState();
@@ -371,6 +371,7 @@ namespace CasinoApp.Application.Services
                 var game = await _blackjackRepository.GetByIdAndUserIdAsync(gameId, userId);
                 if (game == null || game.Status != "PlayerTurn") throw new InvalidOperationException("Hru nelze hrát.");
 
+        
                 game.Status = "DealerTurn";
                 var deck = DeserializeDeck(game.Deck);
                 var playerHand = new Hand { Cards = DeserializeHand(game.PlayerHand) };
@@ -388,32 +389,48 @@ namespace CasinoApp.Application.Services
                 else if (dScore < pScore) { winAmount = game.Stake * 2; gameState.IsWin = true; game.ResultMessage = $"Výhra ({pScore} vs {dScore})"; gameState.Message = $"Máš {pScore}! Výhra."; }
                 else { winAmount = game.Stake; game.ResultMessage = "Push"; gameState.Message = "Remíza."; }
 
-                Wallet walletForDto = game.User.Wallet;
-
+                decimal currentBalance = 0;
+                
                 if (winAmount > 0)
                 {
+
                     var freshWallet = await _walletRepository.GetByUserIdAsync(userId);
+                    
                     freshWallet.Balance += winAmount;
 
                     var transaction = new Transaction
-                    {
+                    { 
                         Id = Guid.NewGuid(),
+                        WalletId = freshWallet.Id,
                         Type = gameState.IsWin ? "BlackjackWin" : "BlackjackPush",
                         Amount = winAmount - game.Stake,
                         BalanceAfter = freshWallet.Balance,
                         Note = game.ResultMessage,
                         CreatedAt = DateTime.UtcNow
                     };
+                    
+                    freshWallet.Transactions.Add(transaction);
 
-                    await _walletRepository.AddTransactionAsync(transaction);
+
                     await _walletRepository.UpdateAsync(freshWallet);
-                    walletForDto = freshWallet;
+            
+                    currentBalance = freshWallet.Balance;
                 }
+                else
+                {
+
+                    currentBalance = game.User.Wallet.Balance;
+                }
+
 
                 game.Status = "Finished";
                 game.EndTime = DateTime.UtcNow;
                 game.DealerHand = SerializeHand(dealerHand.Cards);
                 game.Deck = SerializeDeck(deck);
+
+
+                game.User = null;
+
                 await _blackjackRepository.UpdateAsync(game);
 
                 gameState.GameId = game.Id;
@@ -422,12 +439,15 @@ namespace CasinoApp.Application.Services
                 gameState.PlayerScore = pScore;
                 gameState.DealerScore = dScore;
                 gameState.Status = game.Status;
-                gameState.NewBalance = walletForDto.Balance;
+                gameState.NewBalance = currentBalance;
             });
+
 
             return gameState;
         }
 
+
+        
         private string SerializeHand(List<Card> cards) => string.Join(",", cards.Select(c => $"{c.Suit.ToString()[0]}-{c.Rank.ToString()}:{(c.IsFaceUp ? "T" : "F")}"));
 
         private List<Card> DeserializeHand(string handData)
