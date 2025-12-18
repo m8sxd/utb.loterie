@@ -10,13 +10,10 @@ namespace CasinoApp.Application.Interfaces
         
         Task<GameResult> PlaySlotsAsync(int userId, decimal stake);
         
-        // 1. Zahájení nové hry (rozdání karet)
         Task<BlackjackGameState> StartBlackjackAsync(int userId, decimal stake);
 
-        // 2. Hráč chce další kartu (Hit)
         Task<BlackjackGameState> BlackjackHitAsync(Guid gameId, int userId);
 
-        // 3. Hráč končí tah (Stand), hraje dealer
         Task<BlackjackGameState> BlackjackStandAsync(Guid gameId, int userId);
     }
 

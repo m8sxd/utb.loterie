@@ -10,6 +10,6 @@ namespace utb.loterie.Models
 
         [Required]
         [Range(1, 6, ErrorMessage = "Musíte vybrat číslo 1 až 6.")]
-        public int Guess { get; set; } = 6; // Výchozí tip
+        public int Guess { get; set; } = 6; 
     }
 }

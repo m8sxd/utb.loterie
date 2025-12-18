@@ -5,7 +5,6 @@ namespace CasinoApp.Infrastructure.Database.Seeding
 {
     public class UserRoleSeeding
     {
-        // Spojíme uživatele s ID 1 (admin_fix) s rolí ID 1 (Admin)
         public IdentityUserRole<int> GetAdminAssignment()
         {
             return new IdentityUserRole<int>

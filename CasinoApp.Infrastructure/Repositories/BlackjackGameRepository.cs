@@ -19,14 +19,11 @@ namespace CasinoApp.Infrastructure.Repositories
         public async Task AddAsync(BlackjackGame game)
         {
             await _dbContext.BlackjackGames.AddAsync(game);
-            // V této architektuře voláme SaveChanges rovnou v repozitáři
             await _dbContext.SaveChangesAsync();
         }
 
         public async Task<BlackjackGame> GetByIdAndUserIdAsync(Guid gameId, int userId)
         {
-            // Zde je klíčové použití .Include() a .ThenInclude(),
-            // abychom načetli celou hierarchii objektů (Hra -> Uživatel -> Peněženka).
             return await _dbContext.BlackjackGames
                 .Include(g => g.User)
                 .ThenInclude(u => u.Wallet)

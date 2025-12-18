@@ -1,4 +1,4 @@
-﻿using CasinoApp.Application.DTOs; // Používáme DTO
+﻿using CasinoApp.Application.DTOs; 
 using CasinoApp.Application.Interfaces;
 using CasinoApp.Domain.Entities;
 using Microsoft.AspNetCore.Mvc;
