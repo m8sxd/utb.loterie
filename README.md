@@ -22,7 +22,7 @@ Vytvořit vícevrstvou webovou aplikaci umožňující uživatelům:
 * **Správa loterie** (tikety, losování) ❌
 * **Záznam kasinových her a výsledků** ✅ *(Výsledky her se zapisují do historie transakcí)*
 * **Role uživatelů:** `User`, `Admin` ✅
-* **Admin správa** uživatelů ✅, loterie ❌
+* **Admin správa** uživatelů ✅, loterie, sázek ❌
 
 ---
 
